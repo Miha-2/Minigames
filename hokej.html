@@ -463,12 +463,12 @@ function drawTutorial(){
 
 function updateMZ(){if(G.phase==='shooting')return;mzT++;if(mzT%90===0){mzIdx+=mzDir;if(mzIdx>=goalZones.length-1){mzIdx=goalZones.length-1;mzDir=-1;}if(mzIdx<=0){mzIdx=0;mzDir=1;}}}
 
-function update(){
+function update(dt){
   updateMZ();
   defenders.forEach(d=>{d.x+=d.vx;d.y+=d.vy;if(d.x<=d.minX){d.x=d.minX;d.vx=Math.abs(d.vx);}if(d.x>=d.maxX){d.x=d.maxX;d.vx=-Math.abs(d.vx);}});
   if(G.phase!=='shooting')return;
   trail.push({x:puck.x,y:puck.y});if(trail.length>24)trail.shift();
-  puck.vx*=FR;puck.vy*=FR;puck.x+=puck.vx;puck.y+=puck.vy;
+  const friction = Math.pow(FR, dt);puck.vx *= friction;puck.vy *= friction;puck.x += puck.vx * dt;puck.y += puck.vy * dt;
   if(puck.x<puck.r){puck.x=puck.r;puck.vx=Math.abs(puck.vx)*BN;addSpark(puck.x,puck.y);}
   if(puck.x>W-puck.r){puck.x=W-puck.r;puck.vx=-Math.abs(puck.vx)*BN;addSpark(puck.x,puck.y);}
   if(puck.y<puck.r){puck.y=puck.r;puck.vy=Math.abs(puck.vy)*BN;addSpark(puck.x,puck.y);}
@@ -500,7 +500,11 @@ function onMiss(){
 function resetPuck(){puck.x=W/2;puck.y=H*0.78;puck.vx=0;puck.vy=0;puck.r=pR();trail=[];sparks=[];isDragging=false;G.phase='idle';document.getElementById('hint').style.opacity='1';}
 function updateUI(){for(let i=0;i<3;i++)document.getElementById('p'+i).classList.toggle('used',i>=G.attemptsLeft);document.getElementById('totalPts').textContent=G.totalScore;document.getElementById('bestPts').textContent=G.bestScore>0?G.bestScore:'\u2014';}
 
-function loop(){ctx.clearRect(0,0,W,H);drawIce();drawGoal();drawDefenders();drawTrail();drawSparks();drawFloaters();drawSlingshot();drawPuck();if(!tutDone&&G.phase==='idle')drawTutorial();update();requestAnimationFrame(loop);}
+let lastTime = performance.now();
+
+function loop(time){
+  const dt = (time - lastTime) / 16.666;
+  lastTime = time;ctx.clearRect(0,0,W,H);drawIce();drawGoal();drawDefenders();drawTrail();drawSparks();drawFloaters();drawSlingshot();drawPuck();if(!tutDone&&G.phase==='idle')drawTutorial();update(dt);requestAnimationFrame(loop);}
 
 function getPos(e){const r=canvas.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:(t.clientX-r.left)*(W/r.width),y:(t.clientY-r.top)*(H/r.height)};}
 canvas.addEventListener('mousedown',e=>{if(G.phase!=='idle')return;const p=getPos(e),dx=p.x-puck.x,dy=p.y-puck.y;if(Math.sqrt(dx*dx+dy*dy)<puck.r+Math.round(28*S)){isDragging=true;G.phase='drag';dragStartX=puck.x;dragStartY=puck.y;document.getElementById('hint').style.opacity='0';}});
