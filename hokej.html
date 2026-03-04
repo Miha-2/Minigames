@@ -329,7 +329,7 @@ function drawGoal(){
   const fs=Math.max(8,Math.round(9*S)),fsa=Math.max(9,Math.round(10*S));
   goalZones.forEach((z,i)=>{
     let col=z.color;
-    if(i===mzIdx){const p=0.5+0.5*Math.sin(mzT*0.08);col=z.pts===100?`rgba(255,215,0,${0.55+p*0.35})`:`rgba(255,140,0,${0.45+p*0.3})`;}
+    if(i===mzIdx){const p=0.5+0.5*Math.sin(mzT*0.08);col=z.pts===100?`rgba(255,215,0,${0.55+p*0.35})`:z.pts===50?`rgba(255,140,0,${0.45+p*0.3})`:`rgba(0,166,80,${0.45+p*0.35})`;}
     ctx.fillStyle=col;ctx.fillRect(z.x,z.y,z.w,z.h);
     ctx.strokeStyle='rgba(255,80,30,0.3)';ctx.lineWidth=0.8;
     for(let gy=0;gy<gh;gy+=Math.round(7*S)){ctx.beginPath();ctx.moveTo(z.x,z.y+gy);ctx.lineTo(z.x+z.w,z.y+gy);ctx.stroke();}
