@@ -258,13 +258,7 @@ function drawIce(){
   ctx.beginPath();ctx.arc(W/2,H*0.5,cR-Math.round(3*S),0,Math.PI*2);ctx.clip();
   ctx.fillStyle='rgba(255,230,0,0.18)';
   ctx.beginPath();ctx.arc(W/2,H*0.5,cR-Math.round(3*S),0,Math.PI*2);ctx.fill();
-  // Dragon logo in center
-  if(dragonGreen.complete&&dragonGreen.naturalWidth>0){
-    const dS=cR*1.4;
-    ctx.globalAlpha=0.22;
-    ctx.drawImage(dragonGreen,W/2-dS/2,H*0.5-dS/2,dS,dS);
-    ctx.globalAlpha=1;
-  }
+  // Dragon logo removed
   const cFs1=Math.max(9,Math.round(12*S));
   ctx.fillStyle='rgba(0,153,204,0.4)';
   ctx.font=`bold ${cFs1}px Russo One`;
