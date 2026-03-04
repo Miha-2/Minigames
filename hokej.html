@@ -258,7 +258,13 @@ function drawIce(){
   ctx.beginPath();ctx.arc(W/2,H*0.5,cR-Math.round(3*S),0,Math.PI*2);ctx.clip();
   ctx.fillStyle='rgba(255,230,0,0.18)';
   ctx.beginPath();ctx.arc(W/2,H*0.5,cR-Math.round(3*S),0,Math.PI*2);ctx.fill();
-  // Dragon logo removed
+  // Dragon logo in center
+  if(dragonGreen.complete&&dragonGreen.naturalWidth>0){
+    const dS=cR*1.4;
+    ctx.globalAlpha=0.22;
+    ctx.drawImage(dragonGreen,W/2-dS/2,H*0.5-dS/2,dS,dS);
+    ctx.globalAlpha=1;
+  }
   const cFs1=Math.max(9,Math.round(12*S));
   ctx.fillStyle='rgba(0,153,204,0.4)';
   ctx.font=`bold ${cFs1}px Russo One`;
@@ -494,11 +500,34 @@ function onMiss(){
 function resetPuck(){puck.x=W/2;puck.y=H*0.78;puck.vx=0;puck.vy=0;puck.r=pR();trail=[];sparks=[];isDragging=false;G.phase='idle';document.getElementById('hint').style.opacity='1';}
 function updateUI(){for(let i=0;i<3;i++)document.getElementById('p'+i).classList.toggle('used',i>=G.attemptsLeft);document.getElementById('totalPts').textContent=G.totalScore;document.getElementById('bestPts').textContent=G.bestScore>0?G.bestScore:'\u2014';}
 
-let lastTime = performance.now();
+
+let lastTime = 0;
 
 function loop(time){
-  const dt = (time - lastTime) / 16.666;
-  lastTime = time;ctx.clearRect(0,0,W,H);drawIce();drawGoal();drawDefenders();drawTrail();drawSparks();drawFloaters();drawSlingshot();drawPuck();if(!tutDone&&G.phase==='idle')drawTutorial();update(dt);requestAnimationFrame(loop);}
+
+  if(!lastTime) lastTime = time;
+
+  let dt = (time - lastTime) / 16.666;
+  lastTime = time;
+
+  if(!isFinite(dt) || dt <= 0 || dt > 3) dt = 1;
+
+  ctx.clearRect(0,0,W,H);
+  drawIce();
+  drawGoal();
+  drawDefenders();
+  drawTrail();
+  drawSparks();
+  drawFloaters();
+  drawSlingshot();
+  drawPuck();
+  if(!tutDone && G.phase==='idle') drawTutorial();
+
+  update(dt);
+
+  requestAnimationFrame(loop);
+}
+
 
 function getPos(e){const r=canvas.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:(t.clientX-r.left)*(W/r.width),y:(t.clientY-r.top)*(H/r.height)};}
 canvas.addEventListener('mousedown',e=>{if(G.phase!=='idle')return;const p=getPos(e),dx=p.x-puck.x,dy=p.y-puck.y;if(Math.sqrt(dx*dx+dy*dy)<puck.r+Math.round(28*S)){isDragging=true;G.phase='drag';dragStartX=puck.x;dragStartY=puck.y;document.getElementById('hint').style.opacity='0';}});
