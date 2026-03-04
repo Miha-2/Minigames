@@ -8,9 +8,9 @@
 <style>
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; }
 :root {
-  --green:#00a650; --gd:#007a38; --gg:rgba(0,166,80,0.35);
+  --green:#007A3D; --gd:#005a2b; --gg:rgba(0,122,61,0.35);
   --gold:#ffd700; --gdc:#cc9900;
-  --bg:#0b1a0e;
+  --bg:#040b06;
 }
 html, body { height:100%; height:100dvh; }
 body {
@@ -29,26 +29,25 @@ body {
 
 .header {
   flex-shrink:0;
-  background:linear-gradient(135deg,#061008,#0e2013);
-  border-bottom:2px solid var(--gd);
-  padding:calc(10px + env(safe-area-inset-top, 0px)) 16px 10px;
+  background:#050d07;
+  border-bottom:1px solid #143a1e;
+  padding:calc(12px + env(safe-area-inset-top, 0px)) 16px 12px;
   display:flex; align-items:center; justify-content:space-between;
   position:relative;
 }
 .header::after {
-  content:''; position:absolute; bottom:0; left:0; right:0; height:1px;
+  content:''; position:absolute; bottom:0; left:0; right:0; height:2px;
   background:linear-gradient(90deg,transparent,var(--green),transparent);
 }
 .game-wordmark {
   font-family:'Russo One',sans-serif; font-size:clamp(18px,5vw,24px);
-  background:linear-gradient(135deg,var(--gold),#ffaa00);
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  color:#fff;
   letter-spacing:2px; line-height:1;
 }
-.game-tagline { font-size:clamp(8px,2.5vw,11px); color:var(--green); letter-spacing:2px; text-transform:uppercase; margin-top:2px; }
+.game-tagline { font-size:clamp(8px,2.5vw,11px); color:var(--green); letter-spacing:2px; text-transform:uppercase; margin-top:3px; }
 .pips { display:flex; align-items:center; gap:6px; }
 .pip { width:clamp(22px,7vw,32px); height:clamp(6px,1.8vw,9px); border-radius:5px; background:var(--green); box-shadow:0 0 8px var(--gg); transition:all 0.3s; }
-.pip.used { background:#1a3a22; box-shadow:none; }
+.pip.used { background:#0f2515; box-shadow:none; }
 
 .sponsor-banner {
   flex-shrink:0; background:linear-gradient(90deg,#ffe600,#fff200);
@@ -63,17 +62,22 @@ body {
 canvas { display:block; width:100%; height:100%; touch-action:none; cursor:crosshair; }
 
 .bottomui {
-  flex-shrink:0; padding:8px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+  flex-shrink:0; padding:10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
   display:flex; align-items:center; justify-content:space-between; gap:10px;
-  background:linear-gradient(180deg,transparent,rgba(0,0,0,0.3));
+  background:#050d07; border-top:1px solid #143a1e;
+  position:relative;
+}
+.bottomui::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg,transparent,var(--green),transparent);
 }
 .scoreboard { display:flex; gap:18px; }
 .sbox { text-align:center; }
-.sbox .sl { font-size:clamp(8px,2.2vw,10px); color:#3a6a45; letter-spacing:1.5px; text-transform:uppercase; }
-.sbox .sv { font-family:'Russo One',sans-serif; font-size:clamp(20px,6vw,28px); color:var(--gold); line-height:1; text-shadow:0 0 10px rgba(255,215,0,0.35); }
-.hint-txt { font-size:clamp(10px,2.8vw,13px); color:#2a5a35; letter-spacing:1px; text-align:center; flex:1; transition:opacity 0.4s; }
+.sbox .sl { font-size:clamp(8px,2.2vw,10px); color:var(--green); letter-spacing:1.5px; text-transform:uppercase; }
+.sbox .sv { font-family:'Russo One',sans-serif; font-size:clamp(20px,6vw,28px); color:#fff; line-height:1; }
+.hint-txt { font-size:clamp(10px,2.8vw,13px); color:#3a6a45; letter-spacing:1px; text-align:center; flex:1; transition:opacity 0.4s; }
 .legend { display:flex; gap:12px; }
-.leg-item { display:flex; align-items:center; gap:4px; font-size:clamp(8px,2.2vw,10px); color:#3a6a45; letter-spacing:1px; }
+.leg-item { display:flex; align-items:center; gap:4px; font-size:clamp(8px,2.2vw,10px); color:#5a8a65; letter-spacing:1px; }
 .leg-dot { width:10px; height:10px; border-radius:2px; }
 
 .overlay {
@@ -96,11 +100,11 @@ canvas { display:block; width:100%; height:100%; touch-action:none; cursor:cross
 .obtn:active { transform:scale(0.97); }
 .obtn.gold { background:linear-gradient(135deg,var(--gdc),var(--gold)); color:#000; box-shadow:0 4px 14px rgba(255,215,0,0.35); }
 .obtn.ghost { background:transparent; border:1px solid #1a3a22; font-size:clamp(11px,3vw,14px); color:#3a6a45; }
-.ssummary { background:rgba(0,166,80,0.08); border:1px solid #1a3a22; border-radius:12px; padding:10px 18px; text-align:center; width:100%; }
+.ssummary { background:rgba(0,122,61,0.08); border:1px solid #1a3a22; border-radius:12px; padding:10px 18px; text-align:center; width:100%; }
 .ssummary .ssl { font-size:clamp(8px,2.2vw,10px); color:var(--green); letter-spacing:2px; text-transform:uppercase; }
 .ssummary .ssv { font-family:'Russo One',sans-serif; font-size:clamp(26px,8vw,34px); color:var(--gold); }
 .breakdown { width:100%; display:flex; flex-direction:column; gap:4px; }
-.brow { display:flex; justify-content:space-between; align-items:center; padding:6px 12px; background:rgba(0,166,80,0.06); border-radius:8px; border-left:3px solid transparent; }
+.brow { display:flex; justify-content:space-between; align-items:center; padding:6px 12px; background:rgba(0,122,61,0.06); border-radius:8px; border-left:3px solid transparent; }
 .brow.gold-row { border-left-color:var(--gold); }
 .brow.orange-row { border-left-color:#ff8c00; }
 .brow.green-row { border-left-color:var(--green); }
@@ -109,7 +113,7 @@ canvas { display:block; width:100%; height:100%; touch-action:none; cursor:cross
 .brow-val { font-family:'Russo One',sans-serif; font-size:clamp(14px,4vw,17px); }
 .fwrap { width:100%; display:flex; flex-direction:column; gap:6px; }
 .fl { font-size:clamp(8px,2.2vw,10px); color:var(--green); letter-spacing:2px; text-transform:uppercase; }
-.fi { width:100%; padding:11px 14px; background:rgba(0,166,80,0.07); border:1.5px solid #1a3a22; border-radius:10px; color:#fff; font-size:clamp(14px,4vw,16px); font-family:'Exo 2',sans-serif; outline:none; transition:border 0.2s; }
+.fi { width:100%; padding:11px 14px; background:rgba(0,122,61,0.07); border:1.5px solid #1a3a22; border-radius:10px; color:#fff; font-size:clamp(14px,4vw,16px); font-family:'Exo 2',sans-serif; outline:none; transition:border 0.2s; }
 .fi:focus { border-color:var(--green); }
 .fi::placeholder { color:#2a5a35; }
 </style>
@@ -119,7 +123,7 @@ canvas { display:block; width:100%; height:100%; touch-action:none; cursor:cross
   <div class="header">
     <div>
       <div class="game-wordmark">ZLATI GOL</div>
-      <div class="game-tagline">Zadeni in osvoji nagrado</div>
+      <div class="game-tagline">Zadeni in osvoji nagrado!</div>
       <div id="gt" style="display:none"></div>
     </div>
     <div class="pips">
@@ -143,7 +147,7 @@ canvas { display:block; width:100%; height:100%; touch-action:none; cursor:cross
     <div class="legend">
       <div class="leg-item"><div class="leg-dot" style="background:#ffd700"></div>100</div>
       <div class="leg-item"><div class="leg-dot" style="background:#ff8c00"></div>50</div>
-      <div class="leg-item"><div class="leg-dot" style="background:#00a650"></div>25</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#007A3D"></div>25</div>
     </div>
   </div>
 </div>
@@ -166,15 +170,16 @@ window.addEventListener('resize',resize);
 
 function pR(){return Math.round(14*S);}
 function dR(){return Math.round(20*S);}
-const FR=0.983,BN=0.70,LM=0.175;
+const FR=0.983,BN=0.70,BASE_LM=0.175;
+function getLM(){return BASE_LM/Math.sqrt(S);}
 function mxP(){return Math.round(90*S);}
 
 const ZD=[
-  {frac:0.22,pts:25,color:'rgba(0,166,80,0.55)',label:'25'},
+  {frac:0.22,pts:25,color:'rgba(0,122,61,0.55)',label:'25'},
   {frac:0.20,pts:50,color:'rgba(255,140,0,0.65)',label:'50'},
   {frac:0.16,pts:100,color:'rgba(255,215,0,0.75)',label:'100'},
   {frac:0.20,pts:50,color:'rgba(255,140,0,0.65)',label:'50'},
-  {frac:0.22,pts:25,color:'rgba(0,166,80,0.55)',label:'25'},
+  {frac:0.22,pts:25,color:'rgba(0,122,61,0.55)',label:'25'},
 ];
 
 const G={attemptsLeft:3,totalScore:0,bestScore:0,shots:[],phase:'idle'};
@@ -238,7 +243,7 @@ function drawIce(){
   ctx.strokeStyle='rgba(204,17,17,0.45)';ctx.lineWidth=Math.max(3,3.5*S);
   ctx.beginPath();ctx.moveTo(rink.x+4,H*0.5);ctx.lineTo(rink.x+rink.w-4,H*0.5);ctx.stroke();
   // Center circle
-  const cR=Math.round(36*S);
+  const cR=Math.round(50*S);
   ctx.strokeStyle='rgba(204,17,17,0.4)';ctx.lineWidth=Math.max(2,2.5*S);
   ctx.beginPath();ctx.arc(W/2,H*0.5,cR,0,Math.PI*2);ctx.stroke();
   // Sponsor logo in center circle
@@ -246,15 +251,15 @@ function drawIce(){
   ctx.beginPath();ctx.arc(W/2,H*0.5,cR-Math.round(3*S),0,Math.PI*2);ctx.clip();
   ctx.fillStyle='rgba(255,230,0,0.18)';
   ctx.beginPath();ctx.arc(W/2,H*0.5,cR-Math.round(3*S),0,Math.PI*2);ctx.fill();
-  const cFs1=Math.max(7,Math.round(9*S));
+  const cFs1=Math.max(9,Math.round(12*S));
   ctx.fillStyle='rgba(0,153,204,0.4)';
   ctx.font=`bold ${cFs1}px Russo One`;
   ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillText('LIMONADE',W/2,H*0.5-Math.round(5*S));
-  const cFs2=Math.max(9,Math.round(12*S));
+  ctx.fillText('LIMONADE',W/2,H*0.5-Math.round(7*S));
+  const cFs2=Math.max(12,Math.round(16*S));
   ctx.fillStyle='rgba(210,0,122,0.45)';
   ctx.font=`bold ${cFs2}px Russo One`;
-  ctx.fillText('pixi',W/2,H*0.5+Math.round(7*S));
+  ctx.fillText('pixi',W/2,H*0.5+Math.round(9*S));
   ctx.restore(); // end center logo clip
   // Center dot
   ctx.fillStyle='rgba(204,17,17,0.6)';ctx.beginPath();ctx.arc(W/2,H*0.5,Math.max(2,2.5*S),0,Math.PI*2);ctx.fill();
@@ -341,7 +346,7 @@ function drawGoal(){
   const fs=Math.max(8,Math.round(9*S)),fsa=Math.max(9,Math.round(10*S));
   goalZones.forEach((z,i)=>{
     let col=z.color;
-    if(i===mzIdx){const p=0.5+0.5*Math.sin(mzT*0.08);col=z.pts===100?`rgba(255,215,0,${0.55+p*0.35})`:z.pts===50?`rgba(255,140,0,${0.45+p*0.3})`:`rgba(0,166,80,${0.45+p*0.35})`;}
+    if(i===mzIdx){const p=0.5+0.5*Math.sin(mzT*0.08);col=z.pts===100?`rgba(255,215,0,${0.55+p*0.35})`:z.pts===50?`rgba(255,140,0,${0.45+p*0.3})`:`rgba(0,122,61,${0.45+p*0.35})`;}
     ctx.fillStyle=col;ctx.fillRect(z.x,z.y,z.w,z.h);
     ctx.strokeStyle='rgba(255,80,30,0.3)';ctx.lineWidth=0.8;
     for(let gy=0;gy<gh;gy+=Math.round(7*S)){ctx.beginPath();ctx.moveTo(z.x,z.y+gy);ctx.lineTo(z.x+z.w,z.y+gy);ctx.stroke();}
@@ -385,12 +390,12 @@ function drawDefenders(){
   });
 }
 
-function drawTrail(){trail.forEach((pt,i)=>{const a=(i/trail.length)*0.45,r=puck.r*(i/trail.length)*0.6;ctx.fillStyle=`rgba(0,220,110,${a})`;ctx.beginPath();ctx.arc(pt.x,pt.y,Math.max(r,1),0,Math.PI*2);ctx.fill();});}
+function drawTrail(){trail.forEach((pt,i)=>{const a=(i/trail.length)*0.45,r=puck.r*(i/trail.length)*0.6;ctx.fillStyle=`rgba(0,160,80,${a})`;ctx.beginPath();ctx.arc(pt.x,pt.y,Math.max(r,1),0,Math.PI*2);ctx.fill();});}
 
 function drawPuck(){
   ctx.fillStyle='rgba(0,0,0,0.25)';ctx.beginPath();ctx.ellipse(puck.x+2*S,puck.y+3*S,puck.r,puck.r*0.45,0,0,Math.PI*2);ctx.fill();
   const gg=ctx.createRadialGradient(puck.x,puck.y,0,puck.x,puck.y,puck.r+6*S);
-  gg.addColorStop(0,'rgba(0,200,100,0.25)');gg.addColorStop(1,'rgba(0,200,100,0)');
+  gg.addColorStop(0,'rgba(0,140,70,0.25)');gg.addColorStop(1,'rgba(0,140,70,0)');
   ctx.fillStyle=gg;ctx.beginPath();ctx.arc(puck.x,puck.y,puck.r+6*S,0,Math.PI*2);ctx.fill();
   const pb=ctx.createRadialGradient(puck.x-2*S,puck.y-2*S,1,puck.x,puck.y,puck.r);
   pb.addColorStop(0,'#777');pb.addColorStop(1,'#111');
@@ -418,12 +423,12 @@ function drawSlingshot(){
   ctx.beginPath();ctx.arc(ax,ay,rR,-Math.PI/2,-Math.PI/2+power*Math.PI*2);ctx.stroke();
   ctx.strokeStyle=`rgba(255,215,0,${power*0.5})`;ctx.lineWidth=1;ctx.setLineDash([Math.round(3*S),Math.round(4*S)]);
   ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(ox,oy);ctx.stroke();ctx.setLineDash([]);
-  let px2=dragStartX,py2=dragStartY,spd=dist*LM,pvx=(dx/Math.max(dist,1))*spd,pvy=(dy/Math.max(dist,1))*spd;
+  let px2=dragStartX,py2=dragStartY,spd=dist*getLM(),pvx=(dx/Math.max(dist,1))*spd,pvy=(dy/Math.max(dist,1))*spd;
   for(let i=0;i<22;i++){pvx*=FR;pvy*=FR;px2+=pvx;py2+=pvy;if(px2<puck.r){px2=puck.r;pvx*=-BN;}if(px2>W-puck.r){px2=W-puck.r;pvx*=-BN;}if(py2<puck.r){py2=puck.r;pvy*=-BN;}if(py2>H-puck.r){py2=H-puck.r;pvy*=-BN;}const a=(1-i/22)*0.6,r2=Math.max(1,(5*(1-i/22)+1)*S);ctx.fillStyle=`rgba(255,215,0,${a})`;ctx.beginPath();ctx.arc(px2,py2,r2,0,Math.PI*2);ctx.fill();}
   ctx.fillStyle=`rgba(255,${Math.round(215-power*115)},0,0.9)`;ctx.font=`bold ${Math.round(12*S)}px Exo 2`;ctx.textAlign='center';ctx.fillText(Math.round(power*100)+'%',ox,oy+Math.round(26*S));
 }
 
-function drawSparks(){sparks=sparks.filter(s=>{s.x+=s.vx;s.y+=s.vy;s.vx*=0.9;s.vy*=0.9;s.life-=0.055;if(s.life<=0)return false;ctx.fillStyle=`rgba(0,230,100,${s.life})`;ctx.beginPath();ctx.arc(s.x,s.y,s.r*s.life,0,Math.PI*2);ctx.fill();return true;});}
+function drawSparks(){sparks=sparks.filter(s=>{s.x+=s.vx;s.y+=s.vy;s.vx*=0.9;s.vy*=0.9;s.life-=0.055;if(s.life<=0)return false;ctx.fillStyle=`rgba(0,160,80,${s.life})`;ctx.beginPath();ctx.arc(s.x,s.y,s.r*s.life,0,Math.PI*2);ctx.fill();return true;});}
 
 function drawFloaters(){floaters=floaters.filter(f=>{f.y+=f.vy;f.life-=0.013;if(f.life<=0)return false;ctx.save();ctx.globalAlpha=f.life;ctx.fillStyle=f.color||'#ffd700';ctx.font=`bold ${Math.round((16+(1-f.life)*12)*S)}px Russo One`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor=f.color;ctx.shadowBlur=Math.round(14*S);ctx.fillText(f.text,f.x,f.y);ctx.restore();return true;});}
 
@@ -437,7 +442,7 @@ function drawTutorial(){
   ctx.beginPath();ctx.moveTo(puck.x,puck.y+Math.round(22*S));ctx.lineTo(puck.x,aY);ctx.stroke();
   ctx.beginPath();ctx.moveTo(puck.x,aY+Math.round(10*S));ctx.lineTo(puck.x-Math.round(7*S),aY);ctx.lineTo(puck.x+Math.round(7*S),aY);ctx.closePath();ctx.fill();ctx.restore();
   ctx.save();ctx.globalAlpha=0.5+0.5*Math.sin(tutA*0.05);ctx.fillStyle='#ffd700';ctx.font=`bold ${Math.round(11*S)}px Russo One`;ctx.textAlign='center';ctx.fillText('POVLECI',puck.x,puck.y+Math.round(75*S));ctx.restore();
-  ctx.save();ctx.globalAlpha=0.25+0.2*Math.sin(tutA*0.06);ctx.fillStyle='#00ff88';ctx.beginPath();ctx.arc(puck.x,puck.y,puck.r+Math.round(16*S),0,Math.PI*2);ctx.fill();ctx.restore();
+  ctx.save();ctx.globalAlpha=0.25+0.2*Math.sin(tutA*0.06);ctx.fillStyle='#00c868';ctx.beginPath();ctx.arc(puck.x,puck.y,puck.r+Math.round(16*S),0,Math.PI*2);ctx.fill();ctx.restore();
 }
 
 function updateMZ(){if(G.phase==='shooting')return;mzT++;if(mzT%90===0){mzIdx+=mzDir;if(mzIdx>=goalZones.length-1){mzIdx=goalZones.length-1;mzDir=-1;}if(mzIdx<=0){mzIdx=0;mzDir=1;}}}
@@ -466,7 +471,7 @@ function onGoal(zone){
   document.getElementById('phone').classList.add('goal-flash');
   setTimeout(()=>document.getElementById('phone').classList.remove('goal-flash'),600);
   const msg=pts===100?'STREL! \u{1F525}':pts===50?'GOL! \u{1F4A5}':'GOL!';
-  floaters.push({x:puck.x,y:puck.y,text:msg+' +'+pts,color:zone.pts===100?'#ffd700':zone.pts===50?'#ff8c00':'#00ff88',life:1,vy:-1.8*S});
+  floaters.push({x:puck.x,y:puck.y,text:msg+' +'+pts,color:zone.pts===100?'#ffd700':zone.pts===50?'#ff8c00':'#00c868',life:1,vy:-1.8*S});
   G.attemptsLeft--;updateUI();trail=[];
   setTimeout(()=>{G.attemptsLeft>0?showGoalOv(pts,zone):showEndGame();},900);
 }
@@ -484,7 +489,7 @@ function loop(){ctx.clearRect(0,0,W,H);drawIce();drawGoal();drawDefenders();draw
 function getPos(e){const r=canvas.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:(t.clientX-r.left)*(W/r.width),y:(t.clientY-r.top)*(H/r.height)};}
 canvas.addEventListener('mousedown',e=>{if(G.phase!=='idle')return;const p=getPos(e),dx=p.x-puck.x,dy=p.y-puck.y;if(Math.sqrt(dx*dx+dy*dy)<puck.r+Math.round(28*S)){isDragging=true;G.phase='drag';dragStartX=puck.x;dragStartY=puck.y;document.getElementById('hint').style.opacity='0';}});
 canvas.addEventListener('mousemove',e=>{if(!isDragging)return;const p=getPos(e),dx=dragStartX-p.x,dy=dragStartY-p.y,d=Math.sqrt(dx*dx+dy*dy),c=Math.min(d,mxP()),nx=dx/Math.max(d,1),ny=dy/Math.max(d,1);puck.x=dragStartX-nx*c;puck.y=dragStartY-ny*c;});
-canvas.addEventListener('mouseup',e=>{if(!isDragging)return;isDragging=false;const dx=dragStartX-puck.x,dy=dragStartY-puck.y,d=Math.sqrt(dx*dx+dy*dy);if(d<8){puck.x=dragStartX;puck.y=dragStartY;G.phase='idle';document.getElementById('hint').style.opacity='1';return;}const spd=d*LM;puck.x=dragStartX;puck.y=dragStartY;puck.vx=(dx/d)*spd;puck.vy=(dy/d)*spd;G.phase='shooting';trail=[];});
+canvas.addEventListener('mouseup',e=>{if(!isDragging)return;isDragging=false;const dx=dragStartX-puck.x,dy=dragStartY-puck.y,d=Math.sqrt(dx*dx+dy*dy);if(d<8){puck.x=dragStartX;puck.y=dragStartY;G.phase='idle';document.getElementById('hint').style.opacity='1';return;}const spd=d*getLM();puck.x=dragStartX;puck.y=dragStartY;puck.vx=(dx/d)*spd;puck.vy=(dy/d)*spd;G.phase='shooting';trail=[];});
 canvas.addEventListener('touchstart',e=>{e.preventDefault();canvas.dispatchEvent(new MouseEvent('mousedown',{clientX:e.touches[0].clientX,clientY:e.touches[0].clientY}));},{passive:false});
 canvas.addEventListener('touchmove',e=>{e.preventDefault();canvas.dispatchEvent(new MouseEvent('mousemove',{clientX:e.touches[0].clientX,clientY:e.touches[0].clientY}));},{passive:false});
 canvas.addEventListener('touchend',e=>{e.preventDefault();canvas.dispatchEvent(new MouseEvent('mouseup',{}));},{passive:false});
@@ -497,8 +502,9 @@ function zoneColor(z){return z.pts===100?'var(--gold)':z.pts===50?'#ff8c00':'var
 function showGoalOv(pts,zone){const big=pts===100,mid=pts===50;showOv(`<div class="oi">${big?'\u{1F525}':mid?'\u{1F4A5}':'\u{1F945}'}</div><div class="ot" style="color:${zoneColor(zone)}">${big?'STREL!':mid?'NATAN\u010CNO!':'GOL!'}</div><div class="os">Ima\u0161 \u0161e <strong style="color:#fff">${G.attemptsLeft}</strong> ${G.attemptsLeft===1?'poskus':'poskusa'}.</div><div class="opts" style="color:${zoneColor(zone)}">+${pts}</div><button class="obtn" onclick="closeOv()">\u25B6 NASLEDNJI STREL</button>`);}
 function showMissOv(){const msgs=['Preve\u010D desno!','Branilec te je ustavil!','Blizu!','Premalo mo\u010Di!'];showOv(`<div class="oi">\u{1F624}</div><div class="ot" style="color:#ff4444">MIMO!</div><div class="os">${msgs[Math.floor(Math.random()*msgs.length)]}<br>Ima\u0161 \u0161e <strong style="color:#fff">${G.attemptsLeft}</strong> ${G.attemptsLeft===1?'poskus':'poskusa'}.</div><button class="obtn" onclick="closeOv()"><span style="font-size:1.4em">\u21BA</span> POSKUSI ZNOVA</button>`);}
 function showEndGame(){const stars=G.totalScore>=200?'\u2B50\u2B50\u2B50':G.totalScore>=100?'\u2B50\u2B50':G.totalScore>0?'\u2B50':'';const rows=G.shots.map((s,i)=>s.pts===0?`<div class="brow red-row"><span class="brow-label">Strel ${i+1}</span><span class="brow-val" style="color:#ff4444">MIMO</span></div>`:`<div class="brow ${s.pts===100?'gold-row':s.pts===50?'orange-row':'green-row'}"><span class="brow-label">Strel ${i+1} \u00B7 ${zoneLabel(s.zone).split(' ')[0].replace('\u{1F3C6}','CENTER').replace('\u{1F3AF}','SREDINA').replace('\u2705','KOT')}</span><span class="brow-val" style="color:${zoneColor(s.zone)}">+${s.pts}</span></div>`).join('');showOv(`<div class="oi">\u{1F3C6}</div><div class="ot" style="color:var(--gold)">KONEC!</div><div style="font-size:24px;margin:-4px 0">${stars}</div><div class="ssummary"><div class="ssl">SKUPAJ TO\u010CK</div><div class="ssv">${G.totalScore}</div></div><div class="breakdown">${rows}</div><button class="obtn gold" onclick="showForm()">PRIJAVI SE ZA NAGRADO</button><button class="obtn ghost" onclick="restartGame()"><span style="font-size:1.4em">\u21BA</span> IGRAJ ZNOVA</button>`);}
-function showForm(){showOv(`<div class="oi" style="font-size:24px;color:var(--green)">HK OLIMPIJA</div><div class="ot" style="color:var(--gold);font-size:20px">PRIJAVA ZA NAGRADO</div><div class="ssummary" style="margin:0"><div class="ssl">TVOJE TO\u010CKE</div><div class="ssv">${G.totalScore}</div></div><div class="fwrap"><div style="display:flex;gap:8px;width:100%"><div style="flex:1"><div class="fl">Ime</div><input class="fi" type="text" placeholder="Janez" id="fN"></div><div style="flex:1"><div class="fl">Priimek</div><input class="fi" type="text" placeholder="Novak" id="fS"></div></div><div class="fl">E-po\u0161ta</div><input class="fi" type="email" placeholder="janez@email.si" id="fE"><div class="fl">Telefonska</div><input class="fi" type="tel" placeholder="+386 40 000 000" id="fT"></div><button class="obtn gold" onclick="submitForm()">PO\u0160LJI PRIJAVO</button>`);}
-function submitForm(){const n=document.getElementById('fN').value.trim(),s=document.getElementById('fS').value.trim(),e=document.getElementById('fE').value.trim();if(!n||!s||!e){alert('Izpolni vsa polja!');return;}const fullName=n+' '+s;showOv(`<div class="oi">\u{1F389}</div><div class="ot" style="color:var(--green)">PRIJAVLJENI!</div><div class="os">Hvala, <strong style="color:#fff">${fullName}</strong>!<br><br>Prijava zabele\u017Eena z <strong style="color:var(--gold)">${G.totalScore} to\u010Dkami</strong>.<br>\u017Drebanje po tekmi. Sre\u010Dno! \u{1F340}</div><div style="font-family:'Russo One',sans-serif;font-size:11px;color:#2a5a35;letter-spacing:2px;margin-top:4px">OLIMPIJA ZMAGUJE!</div><button class="obtn" onclick="restartGame()" style="margin-top:8px"><span style="font-size:1.4em">\u21BA</span> IGRAJ ZNOVA</button>`);}
+function showForm(){showOv(`<div class="oi" style="font-size:24px;color:var(--green)">HK OLIMPIJA</div><div class="ot" style="color:var(--gold);font-size:20px">PRIJAVA ZA NAGRADO</div><div class="ssummary" style="margin:0"><div class="ssl">TVOJE TO\u010CKE</div><div class="ssv">${G.totalScore}</div></div><div class="fwrap"><div style="display:flex;gap:8px;width:100%"><div style="flex:1"><div class="fl">Ime</div><input class="fi" type="text" placeholder="Janez" id="fN"></div><div style="flex:1"><div class="fl">Priimek</div><input class="fi" type="text" placeholder="Novak" id="fS"></div></div><div class="fl">Va\u0161 e-naslov</div><input class="fi" type="email" placeholder="janez@email.si" id="fE"><div class="fl">Telefonska \u0161tevilka</div><input class="fi" type="tel" placeholder="+386 40 000 000" id="fT"></div><button class="obtn gold" onclick="submitForm()">ODDAJ PRIJAVO</button><div style="margin-top:6px;font-size:clamp(8px,2.2vw,10px);color:#3a6a45;text-align:center;line-height:1.4">Z oddajo potrjujem, da se strinjam s pravili nagradne igre.</div>`);}
+function submitForm(){const n=document.getElementById('fN').value.trim(),s=document.getElementById('fS').value.trim(),e=document.getElementById('fE').value.trim();if(!n||!s||!e){alert('Izpolni vsa polja!');return;}const fullName=n+' '+s;showOv(`<div class="oi">\u{1F389}</div><div class="ot" style="color:var(--green)">PRIJAVLJENI!</div><div class="os">Hvala, <strong style="color:#fff">${fullName}</strong>!<br><br>Prijava zabele\u017Eena z <strong style="color:var(--gold)">${G.totalScore} to\u010Dkami</strong>.<br>\u017Drebanje po tekmi. Sre\u010Dno! \u{1F340}</div><div style="font-family:'Russo One',sans-serif;font-size:12px;color:var(--green);letter-spacing:3px;margin-top:6px">ROJENI IZ LEGENDE</div><button class="obtn" onclick="restartGame()" style="margin-top:8px"><span style="font-size:1.4em">\u21BA</span> IGRAJ ZNOVA</button>`);}
+
 function restartGame(){G.attemptsLeft=3;G.totalScore=0;G.bestScore=0;G.shots=[];tutDone=false;tutA=0;const o=document.querySelector('.overlay');if(o)o.remove();updateUI();resetPuck();}
 
 resize();loop();
