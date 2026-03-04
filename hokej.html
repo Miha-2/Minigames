@@ -10,7 +10,7 @@
 :root {
   --green:#00a650; --gd:#007a38; --gg:rgba(0,166,80,0.35);
   --gold:#ffd700; --gdc:#cc9900;
-  --bg:#0b1a0e; --bd:#1a3a22;
+  --bg:#0b1a0e;
 }
 html, body { height:100%; height:100dvh; }
 body {
@@ -56,7 +56,7 @@ body {
   display:flex; align-items:center; justify-content:space-between; gap:8px;
 }
 .sponsor-label { font-size:clamp(7px,2vw,9px); color:#888; letter-spacing:2px; text-transform:uppercase; flex-shrink:0; }
-.sponsor-logo { font-family:'Russo One',sans-serif; font-size:clamp(14px,4vw,18px); color:#cc0000; letter-spacing:1px; flex:1; text-align:center; }
+.sponsor-logo { font-family:'Russo One',sans-serif; font-size:clamp(14px,4vw,18px); color:#0099cc; letter-spacing:1px; flex:1; text-align:center; }
 .sponsor-cta { font-size:clamp(7px,2vw,9px); color:#555; letter-spacing:1px; text-align:right; flex-shrink:0; max-width:90px; line-height:1.3; }
 
 .cwrap { flex:1; position:relative; margin:0; overflow:hidden; }
@@ -120,7 +120,7 @@ canvas { display:block; width:100%; height:100%; touch-action:none; cursor:cross
     <div>
       <div class="game-wordmark">ZLATI GOL</div>
       <div class="game-tagline">Zadeni in osvoji nagrado</div>
-      <div id="gt" style="display:none">38:14</div>
+      <div id="gt" style="display:none"></div>
     </div>
     <div class="pips">
       <div class="pip" id="p0"></div>
@@ -130,7 +130,7 @@ canvas { display:block; width:100%; height:100%; touch-action:none; cursor:cross
   </div>
   <div class="sponsor-banner">
     <div class="sponsor-label">Sponzor</div>
-    <div class="sponsor-logo" style="color:#0099cc">LIMONADE <span style="background:#d2007a;color:#fff;padding:1px 6px;border-radius:4px">pixi</span></div>
+    <div class="sponsor-logo">LIMONADE <span style="background:#d2007a;color:#fff;padding:1px 6px;border-radius:4px">pixi</span></div>
     <div class="sponsor-cta">halopixi.si</div>
   </div>
   <div class="cwrap"><canvas id="c"></canvas></div>
@@ -148,9 +148,7 @@ canvas { display:block; width:100%; height:100%; touch-action:none; cursor:cross
   </div>
 </div>
 <script>
-// Timer (hidden)
-let ts=38*60+14;
-setInterval(()=>{ts++;const m=Math.floor(ts/60),s=ts%60;document.getElementById('gt').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');},1000);
+// Timer disabled (element hidden)
 
 const canvas=document.getElementById('c');
 const ctx=canvas.getContext('2d');
@@ -220,18 +218,16 @@ function drawRinkShape(){
 }
 
 function drawIce(){
-  // Dark bg outside rink
   ctx.fillStyle='#060e08';ctx.fillRect(0,0,W,H);
-  // Ice fill
   const g=ctx.createLinearGradient(0,0,0,H);
   g.addColorStop(0,'#b0d8ea');g.addColorStop(0.35,'#d4eeff');g.addColorStop(0.65,'#d8f0ff');g.addColorStop(1,'#b0d8ea');
   ctx.fillStyle=g;
   drawRinkShape();ctx.fill();
-  // Border
   ctx.strokeStyle='rgba(50,80,110,0.4)';ctx.lineWidth=Math.max(2,2.5*S);
   drawRinkShape();ctx.stroke();
-  // Ice scratches
+  // Clip to rink for all interior drawing
   ctx.save();drawRinkShape();ctx.clip();
+  // Ice scratches
   ctx.strokeStyle='rgba(150,195,225,0.12)';ctx.lineWidth=0.5;
   for(let x=0;x<W;x+=Math.round(18*S)){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
   // Blue lines
@@ -245,34 +241,30 @@ function drawIce(){
   const cR=Math.round(36*S);
   ctx.strokeStyle='rgba(204,17,17,0.4)';ctx.lineWidth=Math.max(2,2.5*S);
   ctx.beginPath();ctx.arc(W/2,H*0.5,cR,0,Math.PI*2);ctx.stroke();
-  // Sponsor logo in center circle (frozen in ice)
+  // Sponsor logo in center circle
   ctx.save();
   ctx.beginPath();ctx.arc(W/2,H*0.5,cR-Math.round(3*S),0,Math.PI*2);ctx.clip();
-  // Yellow fill
   ctx.fillStyle='rgba(255,230,0,0.18)';
   ctx.beginPath();ctx.arc(W/2,H*0.5,cR-Math.round(3*S),0,Math.PI*2);ctx.fill();
-  // "LIMONADE" text
   const cFs1=Math.max(7,Math.round(9*S));
   ctx.fillStyle='rgba(0,153,204,0.4)';
   ctx.font=`bold ${cFs1}px Russo One`;
   ctx.textAlign='center';ctx.textBaseline='middle';
   ctx.fillText('LIMONADE',W/2,H*0.5-Math.round(5*S));
-  // "pixi" text
   const cFs2=Math.max(9,Math.round(12*S));
   ctx.fillStyle='rgba(210,0,122,0.45)';
   ctx.font=`bold ${cFs2}px Russo One`;
   ctx.fillText('pixi',W/2,H*0.5+Math.round(7*S));
-  ctx.restore();
+  ctx.restore(); // end center logo clip
   // Center dot
   ctx.fillStyle='rgba(204,17,17,0.6)';ctx.beginPath();ctx.arc(W/2,H*0.5,Math.max(2,2.5*S),0,Math.PI*2);ctx.fill();
-
   // Sheen
   const gl=ctx.createRadialGradient(W*0.3,H*0.15,0,W*0.35,H*0.2,W*0.4);
   gl.addColorStop(0,'rgba(255,255,255,0.15)');gl.addColorStop(1,'rgba(255,255,255,0)');
   ctx.fillStyle=gl;ctx.fillRect(0,0,W,H);
-  // Board sponsor banners
+  // Board ads
   drawBoardAds();
-  ctx.restore();
+  ctx.restore(); // end rink clip
 }
 
 function drawBoardAds(){
