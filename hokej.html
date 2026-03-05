@@ -45,9 +45,9 @@ body {
   letter-spacing:2px; line-height:1;
 }
 .game-tagline { font-size:clamp(8px,2.5vw,11px); color:var(--green); letter-spacing:2px; text-transform:uppercase; margin-top:3px; }
-.pips { display:flex; align-items:center; gap:6px; }
-.pip { width:clamp(22px,7vw,32px); height:clamp(6px,1.8vw,9px); border-radius:5px; background:var(--green); box-shadow:0 0 8px var(--gg); transition:all 0.3s; }
-.pip.used { background:#0f2515; box-shadow:none; }
+.shot-counter { display:flex; flex-direction:column; align-items:center; gap:2px; }
+.shot-counter .sc-label { font-size:clamp(7px,2vw,9px); color:var(--green); letter-spacing:2px; text-transform:uppercase; }
+.shot-counter .sc-num { font-family:'Russo One',sans-serif; font-size:clamp(22px,7vw,30px); color:#fff; line-height:1; }
 
 .sponsor-banner {
   flex-shrink:0; background:linear-gradient(90deg,#ffe600,#fff200);
@@ -129,10 +129,9 @@ canvas { display:block; width:100%; height:100%; touch-action:none; cursor:cross
       <div id="gt" style="display:none"></div>
       </div>
     </div>
-    <div class="pips">
-      <div class="pip" id="p0"></div>
-      <div class="pip" id="p1"></div>
-      <div class="pip" id="p2"></div>
+    <div class="shot-counter">
+      <div class="sc-label">STRELI</div>
+      <div class="sc-num" id="shotNum">3</div>
     </div>
   </div>
   <div class="sponsor-banner">
@@ -492,7 +491,7 @@ function onMiss(){
   setTimeout(()=>{G.attemptsLeft>0?showMissOv():showEndGame();},750);
 }
 function resetPuck(){puck.x=W/2;puck.y=H*0.78;puck.vx=0;puck.vy=0;puck.r=pR();trail=[];sparks=[];isDragging=false;G.phase='idle';document.getElementById('hint').style.opacity='1';}
-function updateUI(){for(let i=0;i<3;i++)document.getElementById('p'+i).classList.toggle('used',i>=G.attemptsLeft);document.getElementById('totalPts').textContent=G.totalScore;}
+function updateUI(){document.getElementById('shotNum').textContent=G.attemptsLeft;document.getElementById('totalPts').textContent=G.totalScore;}
 
 
 let lastTime = 0;
