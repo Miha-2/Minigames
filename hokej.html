@@ -1009,7 +1009,7 @@
       G.phase = 'dead'; tutDone = true; G.totalScore += zone.pts; G.shots.push(zone.pts);
       document.getElementById('game').classList.add('flash');
       setTimeout(() => document.getElementById('game').classList.remove('flash'), 600);
-      floaters.push({ x: puck.x, y: puck.y, text: '+' + zone.pts, color: zoneColor(zone.pts), life: 1, vy: -1.8 * S });
+      floaters.push({ x: puck.x, y: puck.y, text: '+' + zone.pts, color: '#fff', life: 1, vy: -1.8 * S });
       G.attemptsLeft--; updateUI(); trail = [];
       setTimeout(() => G.attemptsLeft > 0 ? showGoalOv(zone) : showEndGame(), 900);
     }
