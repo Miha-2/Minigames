@@ -50,13 +50,13 @@ body {
 .shot-counter .sc-num { font-family:'Russo One',sans-serif; font-size:clamp(22px,7vw,30px); color:#fff; line-height:1; }
 
 .sponsor-banner {
-  flex-shrink:0; background:linear-gradient(90deg,#ffe600,#fff200);
-  border-bottom:2px solid #d2007a; padding:8px 16px;
+  flex-shrink:0; background:linear-gradient(90deg,#ED1C24,#d41920);
+  border-bottom:2px solid #b01018; padding:8px 16px;
   display:flex; align-items:center; justify-content:space-between; gap:8px;
 }
-.sponsor-label { font-size:clamp(7px,2vw,9px); color:#888; letter-spacing:2px; text-transform:uppercase; flex-shrink:0; }
-.sponsor-logo { font-family:'Russo One',sans-serif; font-size:clamp(14px,4vw,18px); color:#0099cc; letter-spacing:1px; flex:1; text-align:center; }
-.sponsor-cta { font-size:clamp(7px,2vw,9px); color:#555; letter-spacing:1px; text-align:right; flex-shrink:0; max-width:90px; line-height:1.3; }
+.sponsor-label { font-size:clamp(7px,2vw,9px); color:rgba(255,255,255,0.7); letter-spacing:2px; text-transform:uppercase; flex-shrink:0; }
+.sponsor-logo { font-family:'Russo One',sans-serif; font-size:clamp(14px,4vw,18px); color:#fff; letter-spacing:1px; flex:1; text-align:center; }
+.sponsor-cta { font-size:clamp(7px,2vw,9px); color:rgba(255,255,255,0.7); letter-spacing:1px; text-align:right; flex-shrink:0; max-width:90px; line-height:1.3; }
 
 .cwrap { flex:1; position:relative; margin:0; overflow:hidden; }
 canvas { display:block; width:100%; height:100%; touch-action:none; cursor:crosshair; }
@@ -136,8 +136,8 @@ canvas { display:block; width:100%; height:100%; touch-action:none; cursor:cross
   </div>
   <div class="sponsor-banner">
     <div class="sponsor-label">Sponzor</div>
-    <div class="sponsor-logo">LIMONADE <span style="background:#d2007a;color:#fff;padding:1px 6px;border-radius:4px">pixi</span></div>
-    <div class="sponsor-cta">halopixi.si</div>
+    <div class="sponsor-logo"><img src="Triglav-White-Horizontal.svg" style="height:clamp(28px,7vw,38px)" alt="Triglav"></div>
+    <div class="sponsor-cta">triglav.si</div>
   </div>
   <div class="cwrap"><canvas id="c"></canvas></div>
   <div class="bottomui">
@@ -152,11 +152,17 @@ canvas { display:block; width:100%; height:100%; touch-action:none; cursor:cross
 const dragonGreen=new Image();dragonGreen.src='dragon_green.png';
 const dragonWhite=new Image();dragonWhite.src='dragon_white.png';
 
+// Opponent logo
+const bolzanoLogo=new Image();bolzanoLogo.src='hc-bolzano-logo.png';
+
 // Timer disabled (element hidden)
 
 const canvas=document.getElementById('c');
 const ctx=canvas.getContext('2d');
 let W,H,S;
+
+// Triglav logos (separate files in same directory)
+const triglavWH=new Image();triglavWH.src='Triglav-White-Horizontal.svg';
 
 function resize(){
   const r=canvas.parentElement.getBoundingClientRect();
@@ -175,11 +181,11 @@ function getLM(){return BASE_LM/Math.sqrt(S);}
 function mxP(){return Math.round(90*S);}
 
 const ZD=[
-  {frac:0.22,pts:25,color:'rgba(0,122,61,0.55)',label:'25'},
-  {frac:0.20,pts:50,color:'rgba(255,140,0,0.65)',label:'50'},
-  {frac:0.16,pts:100,color:'rgba(255,215,0,0.75)',label:'100'},
-  {frac:0.20,pts:50,color:'rgba(255,140,0,0.65)',label:'50'},
-  {frac:0.22,pts:25,color:'rgba(0,122,61,0.55)',label:'25'},
+  {frac:0.22,pts:25,color:'#007A3D',label:'25'},
+  {frac:0.20,pts:50,color:'#e07800',label:'50'},
+  {frac:0.16,pts:100,color:'#ccac00',label:'100'},
+  {frac:0.20,pts:50,color:'#e07800',label:'50'},
+  {frac:0.22,pts:25,color:'#007A3D',label:'25'},
 ];
 
 const G={attemptsLeft:3,totalScore:0,bestScore:0,shots:[],phase:'idle'};
@@ -199,9 +205,9 @@ function initWorld(){
   puck={x:W/2,y:H*0.78,vx:0,vy:0,r:pR()};
   const dr=dR();
   defenders=[
-    {x:W*0.22,y:H*0.24,vx:1.5*S,vy:0,r:dr,minX:W*0.08,maxX:W*0.55},
-    {x:W*0.78,y:H*0.38,vx:-1.3*S,vy:0,r:dr,minX:W*0.45,maxX:W*0.92},
-    {x:W*0.50,y:H*0.52,vx:1.1*S,vy:0,r:dr,minX:W*0.15,maxX:W*0.85},
+    {x:W*0.22,y:H*0.24,vx:2.6*S,vy:0,r:dr,minX:W*0.08,maxX:W*0.55},
+    {x:W*0.78,y:H*0.38,vx:-2.2*S,vy:0,r:dr,minX:W*0.45,maxX:W*0.92},
+    {x:W*0.50,y:H*0.52,vx:1.9*S,vy:0,r:dr,minX:W*0.15,maxX:W*0.85},
   ];
   trail=[];sparks=[];floaters=[];
   G.phase='idle';isDragging=false;mzT=0;
@@ -246,28 +252,19 @@ function drawIce(){
   const cR=Math.round(50*S);
   ctx.strokeStyle='rgba(204,17,17,0.4)';ctx.lineWidth=Math.max(2,2.5*S);
   ctx.beginPath();ctx.arc(W/2,H*0.5,cR,0,Math.PI*2);ctx.stroke();
-  // Sponsor logo in center circle
+  // Dragon logo in center circle
   ctx.save();
   ctx.beginPath();ctx.arc(W/2,H*0.5,cR-Math.round(3*S),0,Math.PI*2);ctx.clip();
-  ctx.fillStyle='rgba(255,230,0,0.18)';
+  ctx.fillStyle='rgba(0,122,61,0.08)';
   ctx.beginPath();ctx.arc(W/2,H*0.5,cR-Math.round(3*S),0,Math.PI*2);ctx.fill();
-  // Dragon logo in center
   if(dragonGreen.complete&&dragonGreen.naturalWidth>0){
-    const dS=cR*1.4;
-    ctx.globalAlpha=0.22;
-    ctx.drawImage(dragonGreen,W/2-dS/2,H*0.5-dS/2,dS,dS);
+    const lH=cR*1.4;
+    const lW=lH*(dragonGreen.naturalWidth/dragonGreen.naturalHeight);
+    ctx.globalAlpha=0.35;
+    ctx.drawImage(dragonGreen,W/2-lW/2,H*0.5-lH/2,lW,lH);
     ctx.globalAlpha=1;
   }
-  const cFs1=Math.max(9,Math.round(12*S));
-  ctx.fillStyle='rgba(0,153,204,0.4)';
-  ctx.font=`bold ${cFs1}px Russo One`;
-  ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillText('LIMONADE',W/2,H*0.5-Math.round(7*S));
-  const cFs2=Math.max(12,Math.round(16*S));
-  ctx.fillStyle='rgba(210,0,122,0.45)';
-  ctx.font=`bold ${cFs2}px Russo One`;
-  ctx.fillText('pixi',W/2,H*0.5+Math.round(9*S));
-  ctx.restore(); // end center logo clip
+  ctx.restore();
   // Center dot
   ctx.fillStyle='rgba(204,17,17,0.6)';ctx.beginPath();ctx.arc(W/2,H*0.5,Math.max(2,2.5*S),0,Math.PI*2);ctx.fill();
   // Sheen
@@ -288,8 +285,8 @@ function drawBoardAds(){
   const hBoardH=Math.round(28*S);
   const hBoardW=Math.round(100*S);
   const hAds=[
-    {txt:'LIMONADE PIXI', bg:'rgba(255,230,0,0.92)', col:'#0099cc', border:'rgba(0,150,200,0.3)'},
-    {txt:'halopixi.si',   bg:'rgba(210,0,120,0.9)',   col:'#ffffff', border:'rgba(255,255,255,0.3)'},
+    {txt:'ZAVAROVALNICA TRIGLAV', bg:'#ED1C24', col:'#ffffff', border:'rgba(255,255,255,0.3)'},
+    {txt:'triglav.si',   bg:'#282828',   col:'#ffffff', border:'rgba(255,255,255,0.2)'},
   ];
   const hPositions=[
     {cx:W*0.25, cy:H*0.88},
@@ -309,39 +306,73 @@ function drawBoardAds(){
     ctx.strokeStyle=ad.border;ctx.lineWidth=Math.max(1,1.5*S);ctx.stroke();
     ctx.strokeStyle='rgba(255,255,255,0.25)';ctx.lineWidth=Math.max(1,S);
     ctx.beginPath();ctx.moveTo(bx-halfW+topShrink,by-hBoardH);ctx.lineTo(bx+halfW-topShrink,by-hBoardH);ctx.stroke();
-    ctx.fillStyle=ad.col;ctx.font=`bold ${fs}px Russo One`;
-    ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(ad.txt,bx,by-hBoardH/2);
+    // Draw on board
+    ctx.save();
+    if(i===0){
+      const imgH=hBoardH*0.6;
+      const imgW=imgH*(triglavWH.naturalWidth/triglavWH.naturalHeight);
+      ctx.drawImage(triglavWH,bx-imgW/2,by-hBoardH/2-imgH/2,imgW,imgH);
+    } else {
+      const urlSize=Math.max(9,Math.round(11*S));
+      ctx.fillStyle='#ffffff';
+      ctx.font=`500 ${urlSize}px 'Exo 2',sans-serif`;
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText('triglav.si',bx,by-hBoardH/2);
+    }
+    ctx.restore();
   });
 
-  // ── VERTICAL side boards (90 deg, along edges) ──
+  // ── VERTICAL side boards with perspective skew ──
   const vBoardH=Math.round(90*S);
-  const vBoardW=Math.round(22*S);
+  const vBoardW=Math.round(28*S);
+  const vSkew=Math.round(4*S);
   const vPositions=[
-    {cx:W*0.06, cy:H*0.35, ad:hAds[0], rot:-Math.PI/2},  // left top
-    {cx:W*0.06, cy:H*0.60, ad:hAds[1], rot:-Math.PI/2},  // left bottom
-    {cx:W*0.94, cy:H*0.35, ad:hAds[1], rot:Math.PI/2},   // right top (flipped)
-    {cx:W*0.94, cy:H*0.60, ad:hAds[0], rot:Math.PI/2},   // right bottom (flipped)
+    {cx:W*0.06, cy:H*0.35, ad:hAds[0], side:'left'},
+    {cx:W*0.06, cy:H*0.60, ad:hAds[1], side:'left'},
+    {cx:W*0.94, cy:H*0.35, ad:hAds[1], side:'right'},
+    {cx:W*0.94, cy:H*0.60, ad:hAds[0], side:'right'},
   ];
   vPositions.forEach((pos)=>{
     const ad=pos.ad;
     const bx=pos.cx, by=pos.cy;
     const halfH=vBoardH/2;
     const halfW=vBoardW/2;
-    const topShrink=halfW*perspective;
+    const isLeft=pos.side==='left';
+    const outerX     = isLeft ? bx-halfW : bx+halfW;
+    const innerX     = isLeft ? bx+halfW : bx-halfW;
+    const outerTop   = by-halfH-vSkew;
+    const outerBottom= by+halfH-vSkew;
+    const innerTop   = by-halfH;
+    const innerBottom= by+halfH;
     ctx.fillStyle='rgba(0,0,0,0.1)';
-    ctx.beginPath();ctx.ellipse(bx,by+halfH+2,halfW*0.7,shadowH,0,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.ellipse(bx,innerBottom+3,halfW*0.7,shadowH,0,0,Math.PI*2);ctx.fill();
     ctx.beginPath();
-    ctx.moveTo(bx-halfW,by+halfH);ctx.lineTo(bx-halfW+topShrink,by-halfH);
-    ctx.lineTo(bx+halfW-topShrink,by-halfH);ctx.lineTo(bx+halfW,by+halfH);
+    if(isLeft){
+      ctx.moveTo(outerX,outerBottom);ctx.lineTo(outerX,outerTop);
+      ctx.lineTo(innerX,innerTop);ctx.lineTo(innerX,innerBottom);
+    } else {
+      ctx.moveTo(innerX,innerBottom);ctx.lineTo(innerX,innerTop);
+      ctx.lineTo(outerX,outerTop);ctx.lineTo(outerX,outerBottom);
+    }
     ctx.closePath();ctx.fillStyle=ad.bg;ctx.fill();
     ctx.strokeStyle=ad.border;ctx.lineWidth=Math.max(1,1.5*S);ctx.stroke();
     ctx.strokeStyle='rgba(255,255,255,0.2)';ctx.lineWidth=Math.max(1,S);
-    ctx.beginPath();ctx.moveTo(bx-halfW+topShrink,by-halfH);ctx.lineTo(bx+halfW-topShrink,by-halfH);ctx.stroke();
-    ctx.save();ctx.translate(bx,by);ctx.rotate(pos.rot);
-    ctx.fillStyle=ad.col;ctx.font=`bold ${Math.max(8,Math.round(9*S))}px Russo One`;
-    ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(ad.txt,0,0);
+    ctx.beginPath();ctx.moveTo(outerX,outerTop);ctx.lineTo(innerX,innerTop);ctx.stroke();
+    ctx.save();
+    const skewFactor=isLeft ? vSkew/vBoardW : -vSkew/vBoardW;
+    ctx.transform(1,skewFactor,0,1,bx,by-vSkew/2);
+    ctx.rotate(isLeft ? -Math.PI/2 : Math.PI/2);
+    if(ad.bg==='#ED1C24'){
+      const imgH=vBoardH*0.22;
+      const imgW=imgH*(triglavWH.naturalWidth/triglavWH.naturalHeight);
+      ctx.drawImage(triglavWH,-imgW/2,-imgH/2,imgW,imgH);
+    } else {
+      const urlSize=Math.max(8,Math.round(10*S));
+      ctx.fillStyle='#ffffff';
+      ctx.font=`500 ${urlSize}px 'Exo 2',sans-serif`;
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText('triglav.si',0,0);
+    }
     ctx.restore();
   });
 }
@@ -377,23 +408,29 @@ function drawGoal(){
 
 function drawDefenders(){
   defenders.forEach(d=>{
-    const td=d.vx>0?-1:1;
-    for(let t=1;t<=3;t++){ctx.fillStyle=`rgba(255,230,0,${0.06*t})`;ctx.beginPath();ctx.arc(d.x+td*t*Math.round(6*S),d.y,d.r*0.55,0,Math.PI*2);ctx.fill();}
-    // Glow - yellow/pink
-    const rg=ctx.createRadialGradient(d.x,d.y,d.r,d.x,d.y,d.r+Math.round(12*S));
-    rg.addColorStop(0,'rgba(255,230,0,0.2)');rg.addColorStop(1,'rgba(210,0,120,0)');
-    ctx.fillStyle=rg;ctx.beginPath();ctx.arc(d.x,d.y,d.r+Math.round(12*S),0,Math.PI*2);ctx.fill();
-    // Body - yellow gradient
-    const bg=ctx.createRadialGradient(d.x-2*S,d.y-2*S,1,d.x,d.y,d.r);
-    bg.addColorStop(0,'#fff200');bg.addColorStop(1,'#e6c700');
+    ctx.save();
+    // Shadow
+    ctx.fillStyle='rgba(0,0,0,0.2)';
+    ctx.beginPath();ctx.ellipse(d.x+2*S,d.y+d.r*0.4,d.r*0.9,d.r*0.3,0,0,Math.PI*2);ctx.fill();
+    // Body - black base
+    const bg=ctx.createRadialGradient(d.x-2*S,d.y-3*S,1,d.x,d.y,d.r);
+    bg.addColorStop(0,'#2a2a2a');bg.addColorStop(1,'#111111');
     ctx.fillStyle=bg;ctx.beginPath();ctx.arc(d.x,d.y,d.r,0,Math.PI*2);ctx.fill();
-    // Border ring - magenta
-    ctx.strokeStyle='#d2007a';ctx.lineWidth=Math.max(2,2.5*S);ctx.beginPath();ctx.arc(d.x,d.y,d.r,0,Math.PI*2);ctx.stroke();
-    // Inner ring - cyan
-    ctx.strokeStyle='rgba(0,153,204,0.5)';ctx.lineWidth=Math.max(1,1.5*S);ctx.beginPath();ctx.arc(d.x,d.y,d.r*0.7,0,Math.PI*2);ctx.stroke();
+    // Red accent ring
+    ctx.strokeStyle='#ED1C24';ctx.lineWidth=Math.max(2.5,3*S);
+    ctx.beginPath();ctx.arc(d.x,d.y,d.r,0,Math.PI*2);ctx.stroke();
+    // White outer ring
+    ctx.strokeStyle='rgba(255,255,255,0.25)';ctx.lineWidth=Math.max(1,1.2*S);
+    ctx.beginPath();ctx.arc(d.x,d.y,d.r+Math.max(1.5,2*S),0,Math.PI*2);ctx.stroke();
+    // Bolzano logo
+    if(bolzanoLogo.complete&&bolzanoLogo.naturalWidth>0){
+      const li=d.r*1.4;
+      ctx.drawImage(bolzanoLogo,d.x-li/2,d.y-li/2,li,li);
+    }
     // Patrol path
-    ctx.strokeStyle='rgba(255,230,0,0.12)';ctx.lineWidth=Math.max(1,1.5*S);ctx.setLineDash([Math.round(4*S),Math.round(4*S)]);
+    ctx.strokeStyle='rgba(237,28,36,0.1)';ctx.lineWidth=Math.max(1,1.5*S);ctx.setLineDash([Math.round(4*S),Math.round(4*S)]);
     ctx.beginPath();ctx.moveTo(d.minX,d.y);ctx.lineTo(d.maxX,d.y);ctx.stroke();ctx.setLineDash([]);
+    ctx.restore();
   });
 }
 
@@ -535,7 +572,7 @@ function closeOv(){const o=document.querySelector('.overlay');if(o)o.remove();re
 function zoneLabel(z){return z.pts===100?'\u{1F3C6} Center (100 to\u010Dk)':z.pts===50?'\u{1F3AF} Sredina (50 to\u010Dk)':'\u2705 Kot (25 to\u010Dk)';}
 function zoneColor(z){return z.pts===100?'var(--gold)':z.pts===50?'#ff8c00':'var(--green)';}
 
-function showGoalOv(pts,zone){const big=pts===100,mid=pts===50;showOv(`<div class="oi">${big?'\u{1F525}':mid?'\u{1F4A5}':'\u{1F945}'}</div><div class="ot" style="color:${zoneColor(zone)}">${big?'STREL!':mid?'NATAN\u010CNO!':'GOL!'}</div><div class="os">Ima\u0161 \u0161e <strong style="color:#fff">${G.attemptsLeft}</strong> ${G.attemptsLeft===1?'strel':'strela'}.</div><div class="opts" style="color:${zoneColor(zone)}">+${pts}</div><button class="obtn" onclick="closeOv()">\u25B6 NASLEDNJI STREL</button>`);}
+function showGoalOv(pts,zone){const big=pts===100,mid=pts===50;showOv(`<div class="oi">${big?'\u{1F525}':mid?'\u{1F4A5}':'\u{1F945}'}</div><div class="ot" style="color:${zoneColor(zone)}">${big?'ZADETEK!':mid?'NATAN\u010CNO!':'GOL!'}</div><div class="os">Ima\u0161 \u0161e <strong style="color:#fff">${G.attemptsLeft}</strong> ${G.attemptsLeft===1?'strel':'strela'}.</div><div class="opts" style="color:${zoneColor(zone)}">+${pts}</div><button class="obtn" onclick="closeOv()">\u25B6 NASLEDNJI STREL</button>`);}
 function showMissOv(){const msgs=['Preve\u010D desno!','Branilec te je ustavil!','Blizu!','Premalo mo\u010Di!'];showOv(`<div class="oi">\u{1F624}</div><div class="ot" style="color:#ff4444">MIMO!</div><div class="os">${msgs[Math.floor(Math.random()*msgs.length)]}<br>Ima\u0161 \u0161e <strong style="color:#fff">${G.attemptsLeft}</strong> ${G.attemptsLeft===1?'strel':'strela'}.</div><button class="obtn" onclick="closeOv()"><span style="font-size:1.4em">\u21BA</span> POSKUSI ZNOVA</button>`);}
 function showEndGame(){const stars=G.totalScore>=200?'\u2B50\u2B50\u2B50':G.totalScore>=100?'\u2B50\u2B50':G.totalScore>0?'\u2B50':'';const rows=G.shots.map((s,i)=>s.pts===0?`<div class="brow red-row"><span class="brow-label">Strel ${i+1}</span><span class="brow-val" style="color:#ff4444">MIMO</span></div>`:`<div class="brow ${s.pts===100?'gold-row':s.pts===50?'orange-row':'green-row'}"><span class="brow-label">Strel ${i+1} \u00B7 ${zoneLabel(s.zone).split(' ')[0].replace('\u{1F3C6}','CENTER').replace('\u{1F3AF}','SREDINA').replace('\u2705','KOT')}</span><span class="brow-val" style="color:${zoneColor(s.zone)}">+${s.pts}</span></div>`).join('');showOv(`<img src="dragon_green.png" style="width:56px;opacity:0.9"><div class="ot" style="color:var(--gold)">KONEC!</div><div style="font-size:24px;margin:-4px 0">${stars}</div><div class="ssummary"><div class="ssl">SKUPAJ TO\u010CK</div><div class="ssv">${G.totalScore}</div></div><div class="breakdown">${rows}</div><button class="obtn gold" onclick="showForm()">PRIJAVI SE ZA NAGRADO</button><button class="obtn ghost" onclick="restartGame()"><span style="font-size:1.4em">\u21BA</span> IGRAJ ZNOVA</button>`);}
 function showForm(){showOv(`<img src="dragon_green.png" style="width:48px;opacity:0.8"><div class="oi" style="font-size:24px;color:var(--green)">HK OLIMPIJA</div><div class="ot" style="color:var(--gold);font-size:20px">PRIJAVA ZA NAGRADO</div><div class="ssummary" style="margin:0"><div class="ssl">TVOJE TO\u010CKE</div><div class="ssv">${G.totalScore}</div></div><div class="fwrap"><div style="display:flex;gap:8px;width:100%"><div style="flex:1"><div class="fl">Ime</div><input class="fi" type="text" placeholder="Janez" id="fN"></div><div style="flex:1"><div class="fl">Priimek</div><input class="fi" type="text" placeholder="Novak" id="fS"></div></div><div class="fl">Va\u0161 e-naslov</div><input class="fi" type="email" placeholder="janez@email.si" id="fE"><div class="fl">Telefonska \u0161tevilka</div><input class="fi" type="tel" placeholder="+386 40 000 000" id="fT"></div><button class="obtn gold" onclick="submitForm()">ODDAJ PRIJAVO</button><div style="margin-top:6px;font-size:clamp(8px,2.2vw,10px);color:#3a6a45;text-align:center;line-height:1.4">Z oddajo potrjujem, da se strinjam s pravili nagradne igre.</div>`);}
