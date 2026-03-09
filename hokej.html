@@ -155,7 +155,7 @@
 
     canvas {
       transform: translateZ(0);
-      touch-action: none;
+      touch-action:none;
 
 
       display: block;
@@ -461,7 +461,7 @@
 
     // ── Canvas ────────────────────────────────────────────────────────────────────
     const canvas = document.getElementById('c');
-    const ctx = canvas.getContext('2d', { alpha: false });
+    const ctx = canvas.getContext('2d', { alpha:false });
     let W, H, S, DPR;
     const r = v => Math.round(v * S);
 
@@ -869,11 +869,8 @@
     }
     function drawSparks() {
       sparks = sparks.filter(s => {
-        s.x += s.vx * dt;
-        s.y += s.vy * dt;
-        s.vx *= Math.pow(0.9, dt);
-        s.vy *= Math.pow(0.9, dt);
-        s.life -= 0.055 * dt; if (s.life <= 0) return false;
+        s.x += s.vx; s.y += s.vy; s.vx *= 0.9; s.vy *= 0.9; s.life -= 0.055;
+        if (s.life <= 0) return false;
         ctx.fillStyle = `rgba(0,160,80,${s.life})`;
         ctx.beginPath(); ctx.arc(s.x, s.y, s.r * s.life, 0, Math.PI * 2); ctx.fill();
         return true;
@@ -883,8 +880,8 @@
     // ── Draw: floaters (no shadowBlur — expensive on mobile) ─────────────────────
     function drawFloaters() {
       floaters = floaters.filter(f => {
-        f.y += f.vy * dt;
-        f.life -= 0.013 * dt; if (f.life <= 0) return false;
+        f.y += f.vy; f.life -= 0.013;
+        if (f.life <= 0) return false;
         ctx.globalAlpha = f.life;
         ctx.fillStyle = f.color;
         ctx.font = `bold ${Math.round((16 + (1 - f.life) * 12) * S)}px Russo One`;
@@ -939,7 +936,7 @@
 
     // ── Draw: tutorial ────────────────────────────────────────────────────────────
     function drawTutorial() {
-      tutA += dt;
+      tutA++;
       const rp = 0.5 + 0.5 * Math.sin(tutA * 0.07);
       ctx.strokeStyle = `rgba(255,215,0,${0.4 + rp * 0.5})`; ctx.lineWidth = Math.max(2, 2.5 * S);
       ctx.beginPath(); ctx.arc(puck.x, puck.y, puck.r + Math.round((8 + rp * 6) * S), 0, Math.PI * 2); ctx.stroke();
@@ -963,15 +960,15 @@
     // ── Update ────────────────────────────────────────────────────────────────────
     function update(dt) {
       if (G.phase !== 'shooting') {
-        mzT += dt;
-         if (mzT % 90 === 0) {
+        mzT++;
+        if (mzT % 90 === 0) {
           mzIdx += mzDir;
           if (mzIdx >= goalZones.length - 1) { mzIdx = goalZones.length - 1; mzDir = -1; }
           if (mzIdx <= 0) { mzIdx = 0; mzDir = 1; }
         }
       }
       for (const d of defenders) {
-        d.x += d.vx * dt;
+        d.x += d.vx;
         if (d.x <= d.minX) { d.x = d.minX; d.vx = Math.abs(d.vx); }
         if (d.x >= d.maxX) { d.x = d.maxX; d.vx = -Math.abs(d.vx); }
       }
