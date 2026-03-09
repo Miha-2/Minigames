@@ -296,8 +296,14 @@
 
     .obtn.gold {
       background: linear-gradient(135deg, var(--gdc), var(--gold));
-      color: #000;
+      color: #fff;
       box-shadow: 0 4px 14px rgba(255, 215, 0, .35);
+    }
+
+    .obtn.white {
+      background: #fff;
+      color: #000;
+      box-shadow: 0 4px 14px rgba(255, 255, 255, 0.15);
     }
 
     .obtn.ghost {
@@ -326,7 +332,7 @@
     .summary .sv {
       font-family: 'Russo One', sans-serif;
       font-size: clamp(26px, 8vw, 34px);
-      color: var(--gold);
+      color: #fff;
     }
 
     .bdown {
@@ -1097,10 +1103,10 @@
         ? `<div class="brow miss"><span class="brow-l">Strel ${i + 1}</span><span class="brow-v" style="color:#ff4444">MIMO</span></div>`
         : `<div class="brow g${pts}"><span class="brow-l">Strel ${i + 1} &middot; ${zoneTag(pts)}</span><span class="brow-v" style="color:${zoneColor(pts)}">+${pts}</span></div>`
       ).join('');
-      showOv(`<img src="dragon_green.png" style="width:56px;opacity:.9"><div class="ot" style="color:var(--gold)">KONEC!</div><div style="font-size:24px;margin:-4px 0">${stars}</div><div class="summary"><div class="sl">SKUPAJ TO\u010CK</div><div class="sv">${G.totalScore}</div></div><div class="bdown">${rows}</div><button class="obtn gold" onclick="showForm()">VSTOPI V ŽREB</button><button class="obtn ghost" onclick="restartGame()"><span style="font-size:1.4em">&#x21BA;</span> IGRAJ ZNOVA</button>`);
+      showOv(`<img src="dragon_green.png" style="width:56px;opacity:.9"><div class="ot" style="color:#fff">KONEC!</div><div style="font-size:24px;margin:-4px 0">${stars}</div><div class="summary"><div class="sl">SKUPAJ TO\u010CK</div><div class="sv">${G.totalScore}</div></div><div class="bdown">${rows}</div><button class="obtn gold" onclick="showForm()">VSTOPI V ŽREB</button><button class="obtn ghost" onclick="restartGame()"><span style="font-size:1.4em">&#x21BA;</span> IGRAJ ZNOVA</button>`);
     }
     function showForm() {
-      showOv(`<img src="dragon_green.png" style="width:48px;opacity:.8"><div class="oi" style="font-size:24px;color:var(--green)">HK OLIMPIJA</div><div class="ot" style="color:var(--gold);font-size:20px">PRIJAVA ZA NAGRADO</div><div class="summary" style="margin:0"><div class="sl">TVOJE TO\u010CKE</div><div class="sv">${G.totalScore}</div></div><div class="fwrap"><div style="display:flex;gap:8px;width:100%"><div style="flex:1"><div class="fl">Ime</div><input class="fi" type="text" placeholder="Janez" id="fN"></div><div style="flex:1"><div class="fl">Priimek</div><input class="fi" type="text" placeholder="Novak" id="fS"></div></div><div class="fl">Va\u0161 e-naslov</div><input class="fi" type="email" placeholder="janez@email.si" id="fE"><div class="fl">Telefonska \u0161tevilka</div><input class="fi" type="tel" placeholder="+386 40 000 000" id="fT"></div><button class="obtn gold" onclick="submitForm()">ODDAJ PRIJAVO</button><div style="margin-top:6px;font-size:clamp(8px,2.2vw,10px);color:#3a6a45;text-align:center;line-height:1.4">Z oddajo potrjujem, da se strinjam s pravili nagradne igre.</div>`);
+      showOv(`<img src="dragon_green.png" style="width:48px;opacity:.8"><div class="oi" style="font-size:24px;color:var(--green)">HK OLIMPIJA</div><div class="ot" style="color:#fff;font-size:20px">PRIJAVA ZA NAGRADO</div><div class="summary" style="margin:0"><div class="sl">TVOJE TO\u010CKE</div><div class="sv">${G.totalScore}</div></div><div class="fwrap"><div style="display:flex;gap:8px;width:100%"><div style="flex:1"><div class="fl">Ime</div><input class="fi" type="text" placeholder="Janez" id="fN"></div><div style="flex:1"><div class="fl">Priimek</div><input class="fi" type="text" placeholder="Novak" id="fS"></div></div><div class="fl">e-naslov</div><input class="fi" type="email" placeholder="janez@email.si" id="fE"><div class="fl">Telefonska \u0161tevilka</div><input class="fi" type="tel" placeholder="+386 40 000 000" id="fT"></div><button class="obtn gold" onclick="submitForm()">ODDAJ PRIJAVO</button><div style="margin-top:6px;font-size:clamp(8px,2.2vw,10px);color:#3a6a45;text-align:center;line-height:1.4">Z oddajo potrjujem, da se strinjam s pravili nagradne igre.</div>`);
     }
     function submitForm() {
       const n = document.getElementById('fN').value.trim(), s = document.getElementById('fS').value.trim(), e = document.getElementById('fE').value.trim();
