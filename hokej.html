@@ -755,9 +755,9 @@
       puck = { x: W / 2, y: H * 0.78, vx: 0, vy: 0, r: PUCK_R() };
       const dr = DEF_R();
       defenders = [
-        { x: W * 0.22, y: H * 0.24, vx: 2.6 * S, r: dr, minX: W * 0.08, maxX: W * 0.55 },
-        { x: W * 0.78, y: H * 0.38, vx: -2.2 * S, r: dr, minX: W * 0.45, maxX: W * 0.92 },
-        { x: W * 0.50, y: H * 0.52, vx: 1.9 * S, r: dr, minX: W * 0.15, maxX: W * 0.85 },
+        { x: W * 0.22, y: H * 0.24, vx: 160 * S, r: dr, minX: W * 0.08, maxX: W * 0.55 },
+        { x: W * 0.78, y: H * 0.38, vx: -140 * S, r: dr, minX: W * 0.45, maxX: W * 0.92 },
+        { x: W * 0.50, y: H * 0.52, vx: 100 * S, r: dr, minX: W * 0.15, maxX: W * 0.85 },
       ];
 
       trail = []; sparks = []; floaters = [];
@@ -968,7 +968,7 @@
         }
       }
       for (const d of defenders) {
-        d.x += d.vx;
+        d.x += d.vx * dt / 60;
         if (d.x <= d.minX) { d.x = d.minX; d.vx = Math.abs(d.vx); }
         if (d.x >= d.maxX) { d.x = d.maxX; d.vx = -Math.abs(d.vx); }
       }
