@@ -679,7 +679,7 @@
         const outerX = left ? cx - vHalf : cx + vHalf, innerX = left ? cx + vHalf : cx - vHalf;
         const oTop = cy - vH / 2 - vSkew, oBot = cy + vH / 2 - vSkew, iTop = cy - vH / 2, iBot = cy + vH / 2;
         c.fillStyle = 'rgba(0,0,0,0.1)';
-        c.beginPath(); c.ellipse(cx, iBot + 3, vHalf * 0.7, shadowH, 0, 0, Math.PI * 2); c.fill();
+        c.beginPath(); c.ellipse(cx, iBot, vHalf * 0.7, shadowH, 0, 0, Math.PI * 2); c.fill();
         c.beginPath();
         if (left) { c.moveTo(outerX, oBot); c.lineTo(outerX, oTop); c.lineTo(innerX, iTop); c.lineTo(innerX, iBot); }
         else { c.moveTo(innerX, iBot); c.lineTo(innerX, iTop); c.lineTo(outerX, oTop); c.lineTo(outerX, oBot); }
