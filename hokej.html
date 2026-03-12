@@ -1157,6 +1157,7 @@
     function submitForm() {
       const n = document.getElementById('fN').value.trim(), s = document.getElementById('fS').value.trim(), e = document.getElementById('fE').value.trim();
       if (!n || !s || !e) { alert('Izpolni vsa polja!'); return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) { alert('Vnesi veljaven e-naslov!'); return; }
 
       // Show loading state
       const btn = document.querySelector('.ov .obtn.gold');
