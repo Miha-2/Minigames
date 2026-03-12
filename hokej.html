@@ -1153,7 +1153,31 @@
     function submitForm() {
       const n = document.getElementById('fN').value.trim(), s = document.getElementById('fS').value.trim(), e = document.getElementById('fE').value.trim();
       if (!n || !s || !e) { alert('Izpolni vsa polja!'); return; }
-      showOv(`<img src="dragon_green.png" style="width:48px;opacity:.85"><div class="ot" style="color:var(--green)">PRIJAVLJENI!</div><div class="os">Hvala, <strong style="color:#fff">${n} ${s}</strong>!<br><br>Prijava zabele\u017Eena z <strong style="color:var(--gold)">${G.totalScore} to\u010Dkami</strong>.<br>\u017Drebanje po tekmi. Sre\u010Dno!</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--green);letter-spacing:3px;margin-top:6px">ROJENI IZ LEGENDE</div><button class="obtn" onclick="goToHub()" style="margin-top:8px">NAZAJ NA HUB</button>`);
+
+      // Show loading state
+      const btn = document.querySelector('.ov .obtn.gold');
+      if (btn) { btn.textContent = 'POŠILJAM...'; btn.disabled = true; btn.style.opacity = '0.6'; }
+
+      // Submit to Mautic
+      const formData = new FormData();
+      formData.append('mauticform[formId]', '25');
+      formData.append('mauticform[formName]', 'igradnevahcbolzano1232026');
+      formData.append('mauticform[firstname]', n);
+      formData.append('mauticform[lastname]', s);
+      formData.append('mauticform[email]', e);
+      formData.append('mauticform[score]', G.totalScore);
+      formData.append('mauticform[return]', '');
+      formData.append('mauticform[submit]', '1');
+
+      fetch('http://marketing.hkolimpija.si/form/submit?formId=25', {
+        method: 'POST',
+        body: formData,
+        mode: 'no-cors'
+      }).then(() => {
+        showOv(`<img src="dragon_green.png" style="width:48px;opacity:.85"><div class="ot" style="color:var(--green)">PRIJAVLJENI!</div><div class="os">Hvala, <strong style="color:#fff">${n} ${s}</strong>!<br><br>Prijava zabele\u017Eena z <strong style="color:var(--gold)">${G.totalScore} to\u010Dkami</strong>.<br>\u017Drebanje po tekmi. Sre\u010Dno!</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--green);letter-spacing:3px;margin-top:6px">ROJENI IZ LEGENDE</div><button class="obtn" onclick="goToHub()" style="margin-top:8px">NAZAJ NA HUB</button>`);
+      }).catch(() => {
+        showOv(`<img src="dragon_green.png" style="width:48px;opacity:.85"><div class="ot" style="color:var(--green)">PRIJAVLJENI!</div><div class="os">Hvala, <strong style="color:#fff">${n} ${s}</strong>!<br><br>Prijava zabele\u017Eena z <strong style="color:var(--gold)">${G.totalScore} to\u010Dkami</strong>.<br>\u017Drebanje po tekmi. Sre\u010Dno!</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--green);letter-spacing:3px;margin-top:6px">ROJENI IZ LEGENDE</div><button class="obtn" onclick="goToHub()" style="margin-top:8px">NAZAJ NA HUB</button>`);
+      });
     }
     function restartGame() {
       G.attemptsLeft = 3; G.totalScore = 0; G.shots = []; tutDone = false; tutA = 0;
