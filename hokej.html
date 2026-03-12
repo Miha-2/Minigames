@@ -1031,10 +1031,16 @@
 
       for (const d of defenders) {
         const dx = puck.x - d.x, dy = puck.y - d.y, dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < puck.r + d.r) {
-          const nx = dx / dist, ny = dy / dist, dot = puck.vx * nx + puck.vy * ny;
-          puck.vx = (puck.vx - dot * nx * 1.6) * 0.8; puck.vy = (puck.vy - dot * ny * 1.6) * 0.8;
-          puck.x = d.x + nx * (puck.r + d.r + 1); puck.y = d.y + ny * (puck.r + d.r + 1);
+        if (dist < puck.r + d.r && dist > 0.01) {
+          const nx = dx / dist, ny = dy / dist;
+          const dot = puck.vx * nx + puck.vy * ny;
+          if (dot < 0) {
+            puck.vx -= dot * nx * 1.5;
+            puck.vy -= dot * ny * 1.5;
+            puck.vx += d.vx * 0.002;
+          }
+          puck.x = d.x + nx * (puck.r + d.r + 2);
+          puck.y = d.y + ny * (puck.r + d.r + 2);
           addSpark(puck.x, puck.y);
         }
       }
