@@ -281,6 +281,14 @@
       }
     }
 
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(7px); }
+      60% { transform: translateX(-5px); }
+      80% { transform: translateX(3px); }
+    }
+
     .ot {
       font-family: 'Barlow Condensed', sans-serif;
       font-weight: 900;
@@ -422,6 +430,20 @@
       display: flex;
       flex-direction: column;
       gap: 0;
+    }
+
+    .fgroup {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .field-err {
+      display: none;
+      color: #ff4444;
+      font-size: clamp(11px, 3vw, 12px);
+      font-family: 'Barlow', sans-serif;
+      margin-top: 4px;
+      min-height: 16px;
     }
 
     .fl {
@@ -1158,12 +1180,35 @@
       showOv(`<img src="dragon_green.png" style="width:56px;opacity:.9"><div class="ot" style="color:#fff">KONEC!</div><div class="summary"><div class="sl">SKUPAJ TO\u010CK</div><div class="sv">${G.totalScore}</div></div><div class="bdown">${rows}</div><button class="obtn gold" onclick="showForm()">NAPREJ</button><button class="obtn ghost" onclick="restartGame()">IGRAJ ZNOVA</button>`);
     }
     function showForm() {
-      showOv(`<img src="dragon_green.png" style="width:48px;opacity:.8"><div class="oi" style="font-size:24px;color:var(--green);font-family:'Barlow Condensed',sans-serif;font-weight:900;letter-spacing:0.08em">HK OLIMPIJA</div><div class="ot" style="color:#fff;font-size:20px">ZABELEŽI SVOJ REZULTAT</div><div class="summary" style="margin:0"><div class="sl">TVOJE TO\u010CKE</div><div class="sv">${G.totalScore}</div></div><div class="fwrap"><div style="display:flex;gap:8px;width:100%"><div style="flex:1"><div class="fl">Ime</div><input class="fi" type="text" placeholder="Janez" id="fN" name="firstname" autocomplete="given-name"></div><div style="flex:1"><div class="fl">Priimek</div><input class="fi" type="text" placeholder="Novak" id="fS" name="lastname" autocomplete="family-name"></div></div><div class="fl">E-naslov</div><input class="fi" type="email" placeholder="janez@email.si" id="fE" name="email" autocomplete="email"></div><button class="obtn gold" onclick="submitForm()">ODDAJ REZULTAT</button><div style="font-size:clamp(11px,3vw,13px);color:#9bbfb0;text-align:center;line-height:1.5;font-family:Barlow,sans-serif">Z oddajo potrjujem, da se strinjam s pogoji uporabe.</div>`);
+      showOv(`<img src="dragon_green.png" style="width:48px;opacity:.8"><div class="oi" style="font-size:24px;color:var(--green);font-family:'Barlow Condensed',sans-serif;font-weight:900;letter-spacing:0.08em">HK OLIMPIJA</div><div class="ot" style="color:#fff;font-size:20px">ZABELEŽI SVOJ REZULTAT</div><div class="summary" style="margin:0"><div class="sl">TVOJE TO\u010CKE</div><div class="sv">${G.totalScore}</div></div><div class="fwrap"><div style="display:flex;gap:8px;width:100%"><div class="fgroup" style="flex:1"><div class="fl">Ime</div><input class="fi" type="text" placeholder="Janez" id="fN" name="firstname" autocomplete="given-name"><div class="field-err" id="fN-err"></div></div><div class="fgroup" style="flex:1"><div class="fl">Priimek</div><input class="fi" type="text" placeholder="Novak" id="fS" name="lastname" autocomplete="family-name"><div class="field-err" id="fS-err"></div></div></div><div class="fgroup"><div class="fl">E-naslov</div><input class="fi" type="email" placeholder="janez@email.si" id="fE" name="email" autocomplete="email"><div class="field-err" id="fE-err"></div></div></div><button class="obtn gold" onclick="submitForm()">ODDAJ REZULTAT</button><div style="font-size:clamp(11px,3vw,13px);color:#9bbfb0;text-align:center;line-height:1.5;font-family:Barlow,sans-serif">Z oddajo potrjujem, da se strinjam s pogoji uporabe.</div>`);
+    }
+    function shakeBtn() {
+      const btn = document.querySelector('.ov .obtn.gold');
+      if (!btn) return;
+      btn.style.animation = 'none'; btn.offsetHeight; // reflow
+      btn.style.animation = 'shake 0.4s ease';
+    }
+    function markField(id, error) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const errEl = document.getElementById(id + '-err');
+      if (error) {
+        el.style.borderColor = '#ff4444';
+        if (errEl) { errEl.textContent = error; errEl.style.display = 'block'; }
+      } else {
+        el.style.borderColor = '#1a3a22';
+        if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
+      }
     }
     function submitForm() {
       const n = document.getElementById('fN').value.trim(), s = document.getElementById('fS').value.trim(), e = document.getElementById('fE').value.trim();
-      if (!n || !s || !e) { alert('Izpolni vsa polja!'); return; }
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) { alert('Vnesi veljaven e-naslov!'); return; }
+      let valid = true;
+      markField('fN', !n ? 'Vnesi ime' : null); if (!n) valid = false;
+      markField('fS', !s ? 'Vnesi priimek' : null); if (!s) valid = false;
+      if (!e) { markField('fE', 'Vnesi e-naslov'); valid = false; }
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) { markField('fE', 'Neveljaven e-naslov'); valid = false; }
+      else { markField('fE', null); }
+      if (!valid) { shakeBtn(); return; }
 
       // Show loading state
       const btn = document.querySelector('.ov .obtn.gold');
