@@ -471,7 +471,7 @@
         <img class="header-logo" src="dragon_green.png" alt="HK Olimpija">
         <div>
           <div class="wordmark">Zlati Gol</div>
-          <div class="tagline">Zadeni in osvoji nagrado!</div>
+          <div class="tagline">Zadeni in zberi točke!</div>
         </div>
       </div>
       <div class="shots">
@@ -1155,10 +1155,10 @@
         ? `<div class="brow miss"><span class="brow-l">Strel ${i + 1}</span><span class="brow-v" style="color:#ff4444">MIMO</span></div>`
         : `<div class="brow g${pts}"><span class="brow-l">Strel ${i + 1} &middot; ${zoneTag(pts)}</span><span class="brow-v" style="color:${zoneColor(pts)}">+${pts}</span></div>`
       ).join('');
-      showOv(`<img src="dragon_green.png" style="width:56px;opacity:.9"><div class="ot" style="color:#fff">KONEC!</div><div class="summary"><div class="sl">SKUPAJ TO\u010CK</div><div class="sv">${G.totalScore}</div></div><div class="bdown">${rows}</div><button class="obtn gold" onclick="showForm()">VSTOPI V ŽREB</button><button class="obtn ghost" onclick="restartGame()">IGRAJ ZNOVA</button>`);
+      showOv(`<img src="dragon_green.png" style="width:56px;opacity:.9"><div class="ot" style="color:#fff">KONEC!</div><div class="summary"><div class="sl">SKUPAJ TO\u010CK</div><div class="sv">${G.totalScore}</div></div><div class="bdown">${rows}</div><button class="obtn gold" onclick="showForm()">NAPREJ</button><button class="obtn ghost" onclick="restartGame()">IGRAJ ZNOVA</button>`);
     }
     function showForm() {
-      showOv(`<img src="dragon_green.png" style="width:48px;opacity:.8"><div class="oi" style="font-size:24px;color:var(--green);font-family:'Barlow Condensed',sans-serif;font-weight:900;letter-spacing:0.08em">HK OLIMPIJA</div><div class="ot" style="color:#fff;font-size:20px">PRIJAVA ZA NAGRADO</div><div class="summary" style="margin:0"><div class="sl">TVOJE TO\u010CKE</div><div class="sv">${G.totalScore}</div></div><div class="fwrap"><div style="display:flex;gap:8px;width:100%"><div style="flex:1"><div class="fl">Ime</div><input class="fi" type="text" placeholder="Janez" id="fN" name="firstname" autocomplete="given-name"></div><div style="flex:1"><div class="fl">Priimek</div><input class="fi" type="text" placeholder="Novak" id="fS" name="lastname" autocomplete="family-name"></div></div><div class="fl">E-naslov</div><input class="fi" type="email" placeholder="janez@email.si" id="fE" name="email" autocomplete="email"></div><button class="obtn gold" onclick="submitForm()">ODDAJ PRIJAVO</button><div style="font-size:clamp(11px,3vw,13px);color:#9bbfb0;text-align:center;line-height:1.5;font-family:Barlow,sans-serif">Z oddajo potrjujem, da se strinjam s pravili nagradne igre.</div>`);
+      showOv(`<img src="dragon_green.png" style="width:48px;opacity:.8"><div class="oi" style="font-size:24px;color:var(--green);font-family:'Barlow Condensed',sans-serif;font-weight:900;letter-spacing:0.08em">HK OLIMPIJA</div><div class="ot" style="color:#fff;font-size:20px">ZABELEŽI SVOJ REZULTAT</div><div class="summary" style="margin:0"><div class="sl">TVOJE TO\u010CKE</div><div class="sv">${G.totalScore}</div></div><div class="fwrap"><div style="display:flex;gap:8px;width:100%"><div style="flex:1"><div class="fl">Ime</div><input class="fi" type="text" placeholder="Janez" id="fN" name="firstname" autocomplete="given-name"></div><div style="flex:1"><div class="fl">Priimek</div><input class="fi" type="text" placeholder="Novak" id="fS" name="lastname" autocomplete="family-name"></div></div><div class="fl">E-naslov</div><input class="fi" type="email" placeholder="janez@email.si" id="fE" name="email" autocomplete="email"></div><button class="obtn gold" onclick="submitForm()">ODDAJ REZULTAT</button><div style="font-size:clamp(11px,3vw,13px);color:#9bbfb0;text-align:center;line-height:1.5;font-family:Barlow,sans-serif">Z oddajo potrjujem, da se strinjam s pogoji uporabe.</div>`);
     }
     function submitForm() {
       const n = document.getElementById('fN').value.trim(), s = document.getElementById('fS').value.trim(), e = document.getElementById('fE').value.trim();
@@ -1185,9 +1185,9 @@
         body: formData,
         mode: 'no-cors'
       }).then(() => {
-        showOv(`<img src="dragon_green.png" style="width:48px;opacity:.85"><div class="ot" style="color:var(--green)">PRIJAVLJENI!</div><div class="os">Hvala, <strong style="color:#fff">${n} ${s}</strong>!<br><br>Prijava zabele\u017Eena z <strong style="color:var(--gold)">${G.totalScore} to\u010Dkami</strong>.<br>\u017Drebanje po tekmi. Sre\u010Dno!</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--green);letter-spacing:3px;margin-top:6px">ROJENI IZ LEGENDE</div><button class="obtn" onclick="goToHub()" style="margin-top:8px">NAZAJ NA HUB</button>`);
+        showOv(`<img src="dragon_green.png" style="width:48px;opacity:.85"><div class="ot" style="color:var(--green)">ODDANO!</div><div class="os">Hvala, <strong style="color:#fff">${n} ${s}</strong>!<br><br>Rezultat zabele\u017Een: <strong style="color:var(--gold)">${G.totalScore} to\u010Dk</strong>.</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--green);letter-spacing:3px;margin-top:6px">ROJENI IZ LEGENDE</div><button class="obtn" onclick="goToHub()" style="margin-top:8px">NAZAJ NA HUB</button>`);
       }).catch(() => {
-        showOv(`<img src="dragon_green.png" style="width:48px;opacity:.85"><div class="ot" style="color:var(--green)">PRIJAVLJENI!</div><div class="os">Hvala, <strong style="color:#fff">${n} ${s}</strong>!<br><br>Prijava zabele\u017Eena z <strong style="color:var(--gold)">${G.totalScore} to\u010Dkami</strong>.<br>\u017Drebanje po tekmi. Sre\u010Dno!</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--green);letter-spacing:3px;margin-top:6px">ROJENI IZ LEGENDE</div><button class="obtn" onclick="goToHub()" style="margin-top:8px">NAZAJ NA HUB</button>`);
+        showOv(`<img src="dragon_green.png" style="width:48px;opacity:.85"><div class="ot" style="color:var(--green)">ODDANO!</div><div class="os">Hvala, <strong style="color:#fff">${n} ${s}</strong>!<br><br>Rezultat zabele\u017Een: <strong style="color:var(--gold)">${G.totalScore} to\u010Dk</strong>.</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--green);letter-spacing:3px;margin-top:6px">ROJENI IZ LEGENDE</div><button class="obtn" onclick="goToHub()" style="margin-top:8px">NAZAJ NA HUB</button>`);
       });
     }
     function restartGame() {
