@@ -1,0 +1,987 @@
+<!doctype html>
+<html lang="sl">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kviz</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* ═══════════════════════════════════════
+           THEME VARIABLES — easy to customize
+           ═══════════════════════════════════════ */
+        :root {
+            --bg-gradient-1: rgba(4, 22, 14, 0.88);
+            --bg-gradient-2: rgba(7, 35, 22, 0.80);
+            --bg-gradient-3: rgba(4, 22, 14, 0.92);
+            --accent: #2EB279;
+            --accent-hover: #1F8F62;
+            --accent-glow: rgba(46, 178, 121, 0.25);
+            --text: #e6fff7;
+            --muted: #bfdad2;
+            --dim: #7A8B85;
+            --card-bg: rgba(255, 255, 255, 0.04);
+            --card-border: rgba(46, 178, 121, 0.15);
+            --correct: #2EB279;
+            --correct-bg: rgba(46, 178, 121, 0.15);
+            --wrong: #E85454;
+            --wrong-bg: rgba(232, 84, 84, 0.12);
+            --option-bg: rgba(255, 255, 255, 0.06);
+            --option-border: rgba(255, 255, 255, 0.12);
+            --option-hover: rgba(255, 255, 255, 0.10);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; }
+
+        body {
+            font-family: 'Barlow', 'Helvetica Neue', sans-serif;
+            color: var(--text);
+            min-height: 100dvh;
+            overflow-x: hidden;
+        }
+
+        .bg-fixed {
+            position: fixed; inset: 0;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: 0;
+        }
+
+        .bg-overlay {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(
+                160deg,
+                rgba(4, 22, 14, 0.82) 0%,
+                rgba(7, 35, 22, 0.75) 50%,
+                rgba(4, 22, 14, 0.88) 100%
+            );
+            z-index: 1;
+        }
+
+        .wrap {
+            position: relative; z-index: 2;
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 2rem 16px 3rem;
+        }
+
+        /* ─── HEADER ─── */
+        .hero { text-align: center; margin-bottom: 1.5rem; }
+
+        .hero-eyebrow {
+            display: block;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 16px; font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 6px;
+        }
+
+        .hero h1 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 900; line-height: 1.15;
+            font-size: clamp(26px, 6vw, 36px);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .hero .sub {
+            color: var(--muted);
+            font-size: clamp(13px, 3.5vw, 15px);
+            margin-top: 6px;
+        }
+
+        /* ─── PROGRESS BAR ─── */
+        .progress-wrap {
+            margin-bottom: 1.2rem;
+            opacity: 0;
+            animation: fadeSlideIn 0.5s ease forwards 0.2s;
+        }
+        .progress-info {
+            display: flex; justify-content: space-between; align-items: center;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 14px; font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+        .progress-bar {
+            width: 100%; height: 6px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 999px;
+            transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            width: 0%;
+        }
+
+        /* ─── QUESTION CARD ─── */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 24px 20px;
+            margin-bottom: 1rem;
+        }
+
+        .question-number {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 13px; font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: clamp(20px, 5vw, 26px);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            line-height: 1.25;
+        }
+
+        /* ─── OPTIONS ─── */
+        .options { display: grid; gap: 10px; margin-bottom: 0; }
+
+        .option-btn {
+            position: relative;
+            width: 100%;
+            display: flex; align-items: center; gap: 14px;
+            padding: 14px 18px;
+            background: var(--option-bg);
+            border: 1.5px solid var(--option-border);
+            border-radius: 14px;
+            color: var(--text);
+            font-family: 'Barlow', sans-serif;
+            font-size: clamp(14px, 3.8vw, 16px);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: left;
+            overflow: hidden;
+        }
+
+        .option-btn:hover:not(.locked) {
+            background: var(--option-hover);
+            border-color: rgba(255,255,255,0.2);
+            transform: translateY(-1px);
+        }
+
+        .option-btn:active:not(.locked) {
+            transform: translateY(0);
+        }
+
+        .option-letter {
+            flex-shrink: 0;
+            width: 32px; height: 32px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.08);
+            display: grid; place-items: center;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 800; font-size: 14px;
+            letter-spacing: 0.04em;
+            transition: all 0.3s ease;
+        }
+
+        /* Feedback states */
+        .option-btn.correct {
+            background: var(--correct-bg);
+            border-color: var(--correct);
+        }
+        .option-btn.correct .option-letter {
+            background: var(--correct);
+            color: #fff;
+        }
+
+        .option-btn.wrong {
+            background: var(--wrong-bg);
+            border-color: var(--wrong);
+        }
+        .option-btn.wrong .option-letter {
+            background: var(--wrong);
+            color: #fff;
+        }
+
+        .option-btn.dimmed {
+            opacity: 0.35;
+        }
+
+        .option-btn.locked { cursor: default; }
+
+        /* Ripple on click */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            transform: scale(0);
+            animation: rippleAnim 0.5s ease-out;
+            pointer-events: none;
+        }
+        @keyframes rippleAnim {
+            to { transform: scale(4); opacity: 0; }
+        }
+
+        /* Feedback icon */
+        .feedback-icon {
+            position: absolute;
+            right: 16px;
+            font-size: 20px;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .option-btn.correct .feedback-icon,
+        .option-btn.wrong .feedback-icon {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* ─── NEXT BUTTON ─── */
+        .next-btn {
+            display: none;
+            width: 100%;
+            padding: 14px 16px;
+            margin-top: 16px;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 18px; font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #fff;
+            background: var(--accent);
+            border: 0; border-radius: 999px;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.08s ease;
+            animation: fadeSlideIn 0.4s ease forwards;
+        }
+        .next-btn:hover { filter: brightness(1.05); }
+        .next-btn:active { transform: translateY(1px); background: var(--accent-hover); }
+
+        /* ─── RESULTS SCREEN ─── */
+        .results { display: none; text-align: center; }
+
+        .results-score {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: clamp(72px, 22vw, 110px);
+            font-weight: 900;
+            color: var(--accent);
+            line-height: 1;
+            margin: 0 0 2px;
+        }
+        .results-label {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: clamp(15px, 4vw, 20px); font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--muted);
+        }
+        .results-msg {
+            color: var(--muted);
+            font-size: clamp(14px, 3.5vw, 16px);
+            margin: 16px 0 24px;
+            line-height: 1.5;
+        }
+
+        /* Score ring */
+        .score-ring-wrap {
+            display: flex; justify-content: center;
+            margin: 24px 0 8px;
+        }
+        .score-ring {
+            width: clamp(160px, 40vw, 220px);
+            height: clamp(160px, 40vw, 220px);
+            position: relative;
+        }
+        .score-ring svg {
+            width: 100%; height: 100%;
+            transform: rotate(-90deg);
+        }
+        .score-ring .bg-circle {
+            fill: none;
+            stroke: rgba(255,255,255,0.06);
+            stroke-width: 6;
+        }
+        .score-ring .fill-circle {
+            fill: none;
+            stroke: var(--accent);
+            stroke-width: 6;
+            stroke-linecap: round;
+            stroke-dasharray: 408;
+            stroke-dashoffset: 408;
+            transition: stroke-dashoffset 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.3s;
+        }
+        .score-ring .score-inner {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+        }
+
+        /* Submit form */
+        .submit-section {
+            margin-top: 24px;
+        }
+        .field span {
+            display: block;
+            margin-bottom: .5rem;
+            padding-left: .6rem;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 15px; font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text);
+        }
+        .field input {
+            width: 100%;
+            padding: clamp(10px, 3vw, 14px) clamp(12px, 4vw, 14px);
+            border-radius: 999px;
+            border: 1px solid rgba(46,178,121,0.4);
+            background: rgba(255,255,255,0.95);
+            color: #111;
+            font-family: 'Barlow', sans-serif;
+            font-size: 15px;
+            transition: box-shadow 0.2s ease;
+        }
+        .field input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+        .field input::placeholder { color: #7A8B85; }
+        .fields { display: grid; gap: 12px; margin-bottom: 16px; }
+        .name-row { display: flex; gap: 12px; }
+        .name-row .field { flex: 1; }
+
+        .cta {
+            width: 100%;
+            padding: 14px 16px;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 18px; font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: white;
+            background: var(--accent);
+            border: 0; border-radius: 999px;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.08s ease;
+        }
+        .cta:hover { filter: brightness(1.05); }
+        .cta:active { transform: translateY(1px); background: var(--accent-hover); }
+
+        .success-msg {
+            display: none;
+            text-align: center;
+            padding: 30px 20px;
+        }
+        .success-msg .checkmark {
+            font-size: 56px;
+            margin-bottom: 12px;
+            color: var(--accent);
+            animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* ─── ANIMATIONS ─── */
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes popIn {
+            0%   { transform: scale(0); opacity: 0; }
+            70%  { transform: scale(1.15); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes shakeX {
+            0%, 100% { transform: translateX(0); }
+            20%      { transform: translateX(-6px); }
+            40%      { transform: translateX(6px); }
+            60%      { transform: translateX(-4px); }
+            80%      { transform: translateX(4px); }
+        }
+
+        .shake { animation: shakeX 0.45s ease; }
+
+        .card-enter {
+            animation: fadeSlideIn 0.45s ease forwards;
+        }
+
+        /* Timer bar */
+        .timer-bar-wrap {
+            height: 3px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 999px;
+            margin-top: 16px;
+            overflow: hidden;
+            display: none;
+        }
+        .timer-bar-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 999px;
+            transition: width 0.1s linear;
+        }
+
+        /* Confetti canvas */
+        #confetti {
+            position: fixed; inset: 0;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        @media (max-width:390px) {
+            .wrap { padding: 1.5rem 12px 2.5rem; }
+            .card { padding: 18px 14px; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-fixed" style="background-image: url('https://marketing.hkolimpija.si/asset/9:background2');"></div>
+    <div class="bg-overlay"></div>
+    <canvas id="confetti"></canvas>
+
+    <main class="wrap">
+        <header class="hero">
+            <span class="hero-eyebrow" id="heroEyebrow">Kviz</span>
+            <h1 id="heroTitle">Preveri svoje znanje!</h1>
+            <p class="sub" id="heroSub">Odgovori na vprašanja in preizkusi koliko veš.</p>
+        </header>
+
+        <!-- QUIZ SCREEN -->
+        <section id="quizScreen">
+            <div class="progress-wrap">
+                <div class="progress-info">
+                    <span id="progressLabel">Vprašanje 1 / 5</span>
+                    <span id="scoreLabel">0 točk</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <div class="card card-enter" id="questionCard">
+                <div class="question-number" id="qNumber">Vprašanje 1</div>
+                <div class="question-text" id="qText"></div>
+                <div class="timer-bar-wrap" id="timerWrap">
+                    <div class="timer-bar-fill" id="timerFill"></div>
+                </div>
+            </div>
+
+            <div class="options" id="optionsContainer"></div>
+
+            <button class="next-btn" id="nextBtn">Naslednje vprašanje →</button>
+        </section>
+
+        <!-- RESULTS SCREEN -->
+        <section class="results" id="resultsScreen">
+            <div class="score-ring-wrap">
+                <div class="score-ring">
+                    <svg viewBox="0 0 140 140">
+                        <circle class="bg-circle" cx="70" cy="70" r="65" />
+                        <circle class="fill-circle" id="scoreCircle" cx="70" cy="70" r="65" />
+                    </svg>
+                    <div class="score-inner">
+                        <div class="results-score" id="finalScore">0</div>
+                        <div class="results-label" id="finalTotal">od 0</div>
+                    </div>
+                </div>
+            </div>
+            <p class="results-msg" id="resultsMsg"></p>
+
+            <div class="submit-section" id="submitSection">
+                <div class="fields">
+                    <div class="name-row">
+                        <label class="field">
+                            <span>Ime</span>
+                            <input type="text" id="inputName" placeholder="Vnesi ime" required />
+                        </label>
+                        <label class="field">
+                            <span>Priimek</span>
+                            <input type="text" id="inputSurname" placeholder="Vnesi priimek" required />
+                        </label>
+                    </div>
+                    <label class="field">
+                        <span>E-naslov</span>
+                        <input type="email" id="inputEmail" placeholder="Vnesi e-naslov" required />
+                    </label>
+                </div>
+                <button class="cta" id="submitBtn">Oddaj rezultat</button>
+            </div>
+
+            <div class="success-msg" id="successMsg">
+                <div class="checkmark">✓</div>
+                <div class="question-text" style="font-size:22px; margin-bottom:8px;">Rezultat oddan!</div>
+                <p class="sub">Hvala za sodelovanje. Srečno!</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+    /* ═══════════════════════════════════════════════════════
+       QUIZ CONFIGURATION — Edit this section to customize!
+       ═══════════════════════════════════════════════════════ */
+
+    const QUIZ_CONFIG = {
+        // ── Branding ──
+        eyebrow: "Kviz",
+        title: "Kako dobro poznaš Olimpijo?",
+        subtitle: "Odgovori na vprašanja in preizkusi svoje znanje o zmajih!",
+
+        // ── Settings ──
+        shuffleQuestions: false,   // Naključni vrstni red vprašanj
+        shuffleOptions: false,     // Naključni vrstni red odgovorov
+        showTimer: false,          // Časovni limit na vprašanje
+        timerSeconds: 15,          // Sekund na vprašanje (če showTimer = true)
+        showReview: false,          // Pregled odgovorov na koncu
+        showSubmitForm: true,      // Obrazec za oddajo rezultata
+        pointsPerCorrect: 1,      // Točke za pravilen odgovor
+
+        // ── Result messages (by percentage) ──
+        resultMessages: [
+            { min: 90, text: "Odlično! Pravo znanje!" },
+            { min: 70, text: "Zelo dobro! Le malo te še loči od vrha." },
+            { min: 50, text: "Solidno! Precej dobro poznaš temo." },
+            { min: 0,  text: "Tokrat ni šlo najbolje. Poskusi znova!" }
+        ],
+
+        // ── Questions ──
+        // correctIndex: index pravilnega odgovora (0-based)
+        questions: [
+            {
+                question: "V katerem letu je bil ustanovljen HK Olimpija Ljubljana?",
+                options: ["2000", "2004", "2007", "2010"],
+                correctIndex: 1
+            },
+            {
+                question: "Kako se imenuje domača dvorana HK Olimpija?",
+                options: ["Arena Stožice", "Hala Tivoli", "Zlatorog Arena", "Ledena dvorana Zalog"],
+                correctIndex: 1
+            },
+            {
+                question: "Kakšen je vzdevek ekipe HK Olimpija?",
+                options: ["Levi", "Medvedi", "Zmaji", "Orlovi"],
+                correctIndex: 2
+            },
+            {
+                question: "V kateri ligi trenutno nastopa HK Olimpija?",
+                options: ["Alpska hokejska liga", "Liga ICEHL", "KHL", "DEL"],
+                correctIndex: 1
+            },
+            {
+                question: "Kateri klub je večni rival HK Olimpija?",
+                options: ["HK Celje", "HDD Jesenice", "HK Maribor", "HK Triglav Kranj"],
+                correctIndex: 1
+            },
+            {
+                question: "Katero žival prikazuje grb kluba HK Olimpija?",
+                options: ["Orel", "Lev", "Zmaj", "Medved"],
+                correctIndex: 2
+            },
+            {
+                question: "Kakšne barve so tradicionalne barve kluba?",
+                options: ["Rdeča in bela", "Modra in bela", "Zelena in bela", "Črna in zlata"],
+                correctIndex: 2
+            },
+            {
+                question: "V sezoni 2018/19 je Olimpija osvojila vse tri naslove. Kako se temu reče?",
+                options: ["Grand Slam", "Trojni uspeh (treble)", "Hat-trick", "Zlati hat-trick"],
+                correctIndex: 1
+            }
+        ]
+    };
+
+    /* ═══════════════════════════════════════════════════════
+       GAME ENGINE — no need to edit below this line
+       ═══════════════════════════════════════════════════════ */
+
+    const $ = id => document.getElementById(id);
+
+    // State
+    let currentQ = 0;
+    let score = 0;
+    let answers = [];        // { qIndex, chosenIndex, correct }
+    let timerInterval = null;
+    let timerLeft = 0;
+    let locked = false;
+    let questions = [];
+
+    // Helpers
+    const letters = 'ABCDEFGHIJ';
+
+    function shuffle(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    }
+
+    function init() {
+        // Set branding
+        $('heroEyebrow').textContent = QUIZ_CONFIG.eyebrow;
+        $('heroTitle').textContent = QUIZ_CONFIG.title;
+        $('heroSub').textContent = QUIZ_CONFIG.subtitle;
+
+        // Prepare questions
+        questions = QUIZ_CONFIG.shuffleQuestions
+            ? shuffle(QUIZ_CONFIG.questions.map((q, i) => ({ ...q, _origIndex: i })))
+            : QUIZ_CONFIG.questions.map((q, i) => ({ ...q, _origIndex: i }));
+
+        // Shuffle options if needed
+        if (QUIZ_CONFIG.shuffleOptions) {
+            questions = questions.map(q => {
+                const correctOption = q.options[q.correctIndex];
+                const shuffled = shuffle(q.options);
+                return { ...q, options: shuffled, correctIndex: shuffled.indexOf(correctOption) };
+            });
+        }
+
+        currentQ = 0;
+        score = 0;
+        answers = [];
+        locked = false;
+
+        $('quizScreen').style.display = 'block';
+        $('resultsScreen').style.display = 'none';
+
+        renderQuestion();
+    }
+
+    function renderQuestion() {
+        const q = questions[currentQ];
+        const total = questions.length;
+
+        // Progress
+        $('progressLabel').textContent = `Vprašanje ${currentQ + 1} / ${total}`;
+        $('scoreLabel').textContent = `${score} točk`;
+        $('progressFill').style.width = `${((currentQ) / total) * 100}%`;
+
+        // Question
+        $('qNumber').textContent = `Vprašanje ${currentQ + 1}`;
+        $('qText').textContent = q.question;
+
+        // Animate card
+        const card = $('questionCard');
+        card.classList.remove('card-enter');
+        void card.offsetWidth; // reflow
+        card.classList.add('card-enter');
+
+        // Options
+        const container = $('optionsContainer');
+        container.innerHTML = '';
+
+        q.options.forEach((opt, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.style.opacity = '0';
+            btn.style.transform = 'translateY(12px)';
+            btn.innerHTML = `
+                <span class="option-letter">${letters[i]}</span>
+                <span class="option-text">${opt}</span>
+                <span class="feedback-icon"></span>
+            `;
+            btn.addEventListener('click', (e) => handleAnswer(i, btn, e));
+            container.appendChild(btn);
+
+            // Stagger animation
+            setTimeout(() => {
+                btn.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+                btn.style.opacity = '1';
+                btn.style.transform = 'translateY(0)';
+            }, 80 + i * 70);
+        });
+
+        // Timer
+        if (QUIZ_CONFIG.showTimer) {
+            $('timerWrap').style.display = 'block';
+            $('timerFill').style.width = '100%';
+            timerLeft = QUIZ_CONFIG.timerSeconds * 10;
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timerLeft--;
+                $('timerFill').style.width = `${(timerLeft / (QUIZ_CONFIG.timerSeconds * 10)) * 100}%`;
+                if (timerLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeout();
+                }
+            }, 100);
+        } else {
+            $('timerWrap').style.display = 'none';
+        }
+
+        // Next button
+        $('nextBtn').style.display = 'none';
+        locked = false;
+    }
+
+    function handleAnswer(chosenIndex, btn, event) {
+        if (locked) return;
+        locked = true;
+        clearInterval(timerInterval);
+
+        const q = questions[currentQ];
+        const isCorrect = chosenIndex === q.correctIndex;
+
+        // Ripple effect
+        const rect = btn.getBoundingClientRect();
+        const ripple = document.createElement('span');
+        ripple.className = 'ripple';
+        ripple.style.left = `${event.clientX - rect.left}px`;
+        ripple.style.top = `${event.clientY - rect.top}px`;
+        btn.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
+
+        // Mark all buttons locked
+        document.querySelectorAll('.option-btn').forEach(b => b.classList.add('locked'));
+
+        if (isCorrect) {
+            score += QUIZ_CONFIG.pointsPerCorrect;
+            btn.classList.add('correct');
+            btn.querySelector('.feedback-icon').textContent = '✓';
+
+            // Dim other options
+            document.querySelectorAll('.option-btn').forEach(b => {
+                if (b !== btn) b.classList.add('dimmed');
+            });
+        } else {
+            btn.classList.add('wrong', 'shake');
+            btn.querySelector('.feedback-icon').textContent = '✗';
+
+            // Show correct answer
+            setTimeout(() => {
+                const allBtns = document.querySelectorAll('.option-btn');
+                allBtns[q.correctIndex].classList.add('correct');
+                allBtns[q.correctIndex].querySelector('.feedback-icon').textContent = '✓';
+                allBtns.forEach((b, idx) => {
+                    if (idx !== q.correctIndex && b !== btn) b.classList.add('dimmed');
+                });
+            }, 350);
+        }
+
+        answers.push({ qIndex: currentQ, chosenIndex, correct: isCorrect });
+
+        // Score update
+        $('scoreLabel').textContent = `${score} točk`;
+
+        // Show next button
+        setTimeout(() => {
+            const nextBtn = $('nextBtn');
+            nextBtn.textContent = currentQ < questions.length - 1
+                ? 'Naslednje vprašanje →'
+                : 'Poglej rezultat →';
+            nextBtn.style.display = 'block';
+        }, 600);
+    }
+
+    function handleTimeout() {
+        if (locked) return;
+        locked = true;
+
+        const q = questions[currentQ];
+        const allBtns = document.querySelectorAll('.option-btn');
+        allBtns.forEach(b => b.classList.add('locked', 'dimmed'));
+        allBtns[q.correctIndex].classList.remove('dimmed');
+        allBtns[q.correctIndex].classList.add('correct');
+        allBtns[q.correctIndex].querySelector('.feedback-icon').textContent = '✓';
+
+        answers.push({ qIndex: currentQ, chosenIndex: -1, correct: false });
+
+        setTimeout(() => {
+            const nextBtn = $('nextBtn');
+            nextBtn.textContent = currentQ < questions.length - 1
+                ? 'Naslednje vprašanje →'
+                : 'Poglej rezultat →';
+            nextBtn.style.display = 'block';
+        }, 600);
+    }
+
+    // Next button
+    $('nextBtn').addEventListener('click', () => {
+        currentQ++;
+        if (currentQ < questions.length) {
+            renderQuestion();
+        } else {
+            showResults();
+        }
+    });
+
+    function showResults() {
+        $('quizScreen').style.display = 'none';
+        $('resultsScreen').style.display = 'block';
+
+        const total = questions.length;
+        const pct = Math.round((score / (total * QUIZ_CONFIG.pointsPerCorrect)) * 100);
+
+        // Animate score number
+        $('finalScore').textContent = '0';
+        $('finalTotal').textContent = `od ${total * QUIZ_CONFIG.pointsPerCorrect}`;
+
+        let counter = 0;
+        const step = Math.max(1, Math.floor(score / 20));
+        const countUp = setInterval(() => {
+            counter = Math.min(counter + step, score);
+            $('finalScore').textContent = counter;
+            if (counter >= score) clearInterval(countUp);
+        }, 40);
+
+        // Ring animation
+        const circumference = 2 * Math.PI * 65; // ~408
+        const offset = circumference - (pct / 100) * circumference;
+        setTimeout(() => {
+            $('scoreCircle').style.strokeDashoffset = offset;
+        }, 100);
+
+        // Result message
+        const msg = QUIZ_CONFIG.resultMessages.find(m => pct >= m.min);
+        $('resultsMsg').textContent = msg ? msg.text : '';
+
+        // Confetti for great scores
+        if (pct >= 70) {
+            launchConfetti();
+        }
+
+        // Review
+        if (QUIZ_CONFIG.showReview) {
+            const list = $('reviewList');
+            list.innerHTML = '';
+            answers.forEach((a, i) => {
+                const q = questions[a.qIndex];
+                const div = document.createElement('div');
+                div.className = 'review-item';
+                const icon = a.correct ? '✓' : '✗';
+                const yourAnswer = a.chosenIndex >= 0 ? q.options[a.chosenIndex] : 'Ni odgovora';
+                div.innerHTML = `
+                    <div class="review-q">${i + 1}. ${q.question}</div>
+                    <div class="review-a">
+                        <span class="icon">${icon}</span>
+                        ${a.correct
+                            ? `<span>${yourAnswer}</span>`
+                            : `<span style="color:var(--wrong);text-decoration:line-through;">${yourAnswer}</span>
+                               → <span style="color:var(--correct);">${q.options[q.correctIndex]}</span>`
+                        }
+                    </div>
+                `;
+                list.appendChild(div);
+                setTimeout(() => div.classList.add('show'), 200 + i * 120);
+            });
+        }
+
+        // Submit form
+        if (QUIZ_CONFIG.showSubmitForm) {
+            $('submitSection').style.display = 'block';
+            $('successMsg').style.display = 'none';
+        } else {
+            $('submitSection').style.display = 'none';
+        }
+
+        // Progress to 100%
+        $('progressFill').style.width = '100%';
+    }
+
+    // Submit
+    $('submitBtn').addEventListener('click', () => {
+        const name = $('inputName').value.trim();
+        const surname = $('inputSurname').value.trim();
+        const email = $('inputEmail').value.trim();
+
+        if (!name || !surname || !email) {
+            $('submitBtn').classList.add('shake');
+            setTimeout(() => $('submitBtn').classList.remove('shake'), 500);
+            return;
+        }
+
+        // ── Here you can send data to your backend ──
+        const payload = {
+            name, surname, email,
+            score,
+            total: questions.length * QUIZ_CONFIG.pointsPerCorrect,
+            answers: answers.map(a => ({
+                question: questions[a.qIndex].question,
+                chosen: a.chosenIndex >= 0 ? questions[a.qIndex].options[a.chosenIndex] : null,
+                correct: a.correct
+            }))
+        };
+        console.log('Quiz submission payload:', payload);
+
+        // Show success
+        $('submitSection').style.display = 'none';
+        $('successMsg').style.display = 'block';
+    });
+
+    // ── Confetti ──
+    function launchConfetti() {
+        const canvas = $('confetti');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particles = [];
+        const colors = ['#2EB279', '#FFB830', '#E85454', '#5B8DEF', '#FFFFFF', '#FF6B9D'];
+
+        for (let i = 0; i < 80; i++) {
+            particles.push({
+                x: canvas.width / 2 + (Math.random() - 0.5) * 200,
+                y: canvas.height * 0.4,
+                vx: (Math.random() - 0.5) * 12,
+                vy: -Math.random() * 14 - 4,
+                w: Math.random() * 8 + 4,
+                h: Math.random() * 6 + 2,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                rotation: Math.random() * 360,
+                rotationSpeed: (Math.random() - 0.5) * 12,
+                gravity: 0.25 + Math.random() * 0.15,
+                opacity: 1
+            });
+        }
+
+        function frame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            let alive = false;
+
+            particles.forEach(p => {
+                p.vy += p.gravity;
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vx *= 0.99;
+                p.rotation += p.rotationSpeed;
+
+                if (p.y > canvas.height + 20) {
+                    p.opacity -= 0.02;
+                }
+
+                if (p.opacity > 0) {
+                    alive = true;
+                    ctx.save();
+                    ctx.globalAlpha = Math.max(0, p.opacity);
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate((p.rotation * Math.PI) / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                    ctx.restore();
+                }
+            });
+
+            if (alive) requestAnimationFrame(frame);
+            else ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        requestAnimationFrame(frame);
+    }
+
+    // Start
+    init();
+    </script>
+</body>
+</html>
