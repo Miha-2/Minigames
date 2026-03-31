@@ -513,8 +513,8 @@
   <script>
     // ── Assets ────────────────────────────────────────────────────────────────────
     const imgDragon = new Image(); imgDragon.src = 'dragon_green.png';
-    const imgBolzano = new Image(); imgBolzano.src = 'hc-bolzano-logo.png';
-    const imgTriglav = new Image(); imgTriglav.src = 'Triglav-White-Horizontal.svg';
+    const imgBolzano = new Image(); imgBolzano.src = 'hc-pustertal-logo.png';
+    const imgTriglav = new Image(); imgTriglav.src = 'lon-logo.png';
 
     // Redraw static layer when images load (they may load after first resize)
     imgDragon.onload = imgTriglav.onload = () => { if (W) buildStaticLayer(); };
@@ -657,8 +657,8 @@
     function drawBoardAdsTo(c) {
       const shadowH = r(4);
       const ADS = [
-        { bg: '#ED1C24', border: 'rgba(255,255,255,0.3)', isLogo: true },
-        { bg: '#282828', border: 'rgba(255,255,255,0.2)', isLogo: false },
+        { bg: '#1a4a43', border: 'rgba(255,255,255,0.25)', isLogo: true },
+        { bg: '#2a7a6e', border: 'rgba(255,255,255,0.25)', isLogo: false },
       ];
 
       function drawAdContent(ad, boardH, isVertical) {
@@ -667,9 +667,9 @@
           c.drawImage(imgTriglav, -iW / 2, -iH / 2, iW, iH);
         } else {
           c.fillStyle = '#fff';
-          c.font = `500 ${Math.max(8, r(10))}px 'Barlow',sans-serif`;
+          c.font = `700 ${Math.max(10, r(13))}px 'Barlow',sans-serif`;
           c.textAlign = 'center'; c.textBaseline = 'middle';
-          c.fillText('triglav.si', 0, 0);
+          c.fillText('lon.si', 0, 0);
         }
       }
 
@@ -761,8 +761,8 @@
       bg.addColorStop(0, '#2a2a2a'); bg.addColorStop(1, '#111');
       c.fillStyle = bg; c.beginPath(); c.arc(cx, cy, dr, 0, Math.PI * 2); c.fill();
 
-      // Red ring
-      c.strokeStyle = '#ED1C24'; c.lineWidth = Math.max(2.5, 3 * S);
+      // Falkensteiner yellow ring
+      c.strokeStyle = '#feca07'; c.lineWidth = Math.max(2.5, 3 * S);
       c.beginPath(); c.arc(cx, cy, dr, 0, Math.PI * 2); c.stroke();
 
       // White outer ring
