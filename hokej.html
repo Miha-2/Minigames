@@ -438,6 +438,11 @@
       flex-direction: column;
     }
 
+    .fwrap > .fgroup + .fgroup,
+    .fwrap > div + .fgroup {
+      margin-top: 10px;
+    }
+
     .field-err {
       display: none;
       color: #ff4444;
@@ -455,10 +460,6 @@
       letter-spacing: 0.08em;
       text-transform: uppercase;
       margin-bottom: 6px;
-      margin-top: 12px;
-    }
-
-    .fl:first-child {
       margin-top: 0;
     }
 
@@ -484,6 +485,35 @@
     .fi:focus {
       border-color: var(--green);
     }
+
+    .consent-check {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      margin-top: 8px;
+    }
+    .consent-check input[type=checkbox] {
+      flex-shrink: 0;
+      width: 15px;
+      height: 15px;
+      margin-top: 2px;
+      accent-color: var(--green);
+      cursor: pointer;
+    }
+    .consent-check span {
+      font-size: clamp(10px, 2.6vw, 11px);
+      color: #6a9a88;
+      line-height: 1.4;
+      font-family: 'Barlow', sans-serif;
+    }
+    .consent-check span a {
+      color: #2EB279;
+      text-decoration: underline;
+    }
+    .consent-check.err span { color: #ff8888; }
   </style>
 </head>
 
@@ -1254,7 +1284,7 @@
       showOv(`<img src="dragon_green.png" style="width:56px;opacity:.9"><div class="ot" style="color:#fff">KONEC!</div><div class="summary"><div class="sl">SKUPAJ TO\u010CK</div><div class="sv">${G.totalScore}</div></div><div class="bdown">${rows}</div><button class="obtn gold" onclick="showForm()">NAPREJ</button><button class="obtn ghost" onclick="restartGame()">IGRAJ ZNOVA</button>`);
     }
     function showForm() {
-      showOv(`<img src="dragon_green.png" style="width:48px;opacity:.8"><div class="oi" style="font-size:24px;color:var(--green);font-family:'Barlow Condensed',sans-serif;font-weight:900;letter-spacing:0.08em">HK OLIMPIJA</div><div class="ot" style="color:#fff;font-size:20px">ZABELEŽI SVOJ REZULTAT</div><div class="summary" style="margin:0"><div class="sl">TVOJE TO\u010CKE</div><div class="sv">${G.totalScore}</div></div><div class="fwrap"><div style="display:flex;gap:8px;width:100%"><div class="fgroup" style="flex:1"><div class="fl">Ime</div><input class="fi" type="text" placeholder="Janez" id="fN" name="firstname" autocomplete="given-name"><div class="field-err" id="fN-err"></div></div><div class="fgroup" style="flex:1"><div class="fl">Priimek</div><input class="fi" type="text" placeholder="Novak" id="fS" name="lastname" autocomplete="family-name"><div class="field-err" id="fS-err"></div></div></div><div class="fgroup"><div class="fl">E-naslov</div><input class="fi" type="email" placeholder="janez@email.si" id="fE" name="email" autocomplete="email"><div class="field-err" id="fE-err"></div></div></div><button class="obtn gold" onclick="submitForm()">ODDAJ REZULTAT</button><div style="font-size:clamp(11px,3vw,13px);color:#9bbfb0;text-align:center;line-height:1.5;font-family:Barlow,sans-serif">Z oddajo potrjujem, da se strinjam s pogoji uporabe.</div>`);
+      showOv(`<img src="dragon_green.png" style="width:48px;opacity:.8"><div class="oi" style="font-size:24px;color:var(--green);font-family:'Barlow Condensed',sans-serif;font-weight:900;letter-spacing:0.08em">HK OLIMPIJA</div><div class="ot" style="color:#fff;font-size:20px">ZABELEŽI SVOJ REZULTAT</div><div class="summary" style="margin:0"><div class="sl">TVOJE TO\u010CKE</div><div class="sv">${G.totalScore}</div></div><div class="fwrap"><div style="display:flex;gap:8px;width:100%"><div class="fgroup" style="flex:1"><div class="fl">Ime</div><input class="fi" type="text" placeholder="Janez" id="fN" name="firstname" autocomplete="given-name"><div class="field-err" id="fN-err"></div></div><div class="fgroup" style="flex:1"><div class="fl">Priimek</div><input class="fi" type="text" placeholder="Novak" id="fS" name="lastname" autocomplete="family-name"><div class="field-err" id="fS-err"></div></div></div><div class="fgroup"><div class="fl">E-naslov</div><input class="fi" type="email" placeholder="janez@email.si" id="fE" name="email" autocomplete="email"><div class="field-err" id="fE-err"></div></div><label class="consent-check" id="chk1-lbl"><input name="mauticform[deljenje_s_sponzorjem][]" id="chk1" type="checkbox" value="da" /><span>Strinjam se s <a href="https://marketing.hkolimpija.si/asset/74:pravilnik-1732026" target="_blank">pravili</a> nagradne igre in politiko zasebnosti HK Olimpija Ljubljana.</span></label><div class="field-err" id="chk1-err"></div><label class="consent-check" id="chk2-lbl"><input name="mauticform[pravilnik][]" id="chk2" type="checkbox" value="da" /><span>Dovoljujem, da HK Olimpija Ljubljana uporabi moj kontakt za ob\u010Dasno po\u0161iljanje klubskih novic, nagradnih iger in posebnih ponudb za navija\u010De.</span></label></div><button class="obtn gold" onclick="submitForm()">ODDAJ REZULTAT</button>`);
     }
     function shakeBtn() {
       const btn = document.querySelector('.ov .obtn.gold');
@@ -1276,12 +1306,23 @@
     }
     function submitForm() {
       const n = document.getElementById('fN').value.trim(), s = document.getElementById('fS').value.trim(), e = document.getElementById('fE').value.trim();
+      const chk1 = document.getElementById('chk1')?.checked;
       let valid = true;
       markField('fN', !n ? 'Vnesi ime' : null); if (!n) valid = false;
       markField('fS', !s ? 'Vnesi priimek' : null); if (!s) valid = false;
       if (!e) { markField('fE', 'Vnesi e-naslov'); valid = false; }
       else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) { markField('fE', 'Neveljaven e-naslov'); valid = false; }
       else { markField('fE', null); }
+      if (!chk1) {
+        const errEl = document.getElementById('chk1-err');
+        if (errEl) { errEl.textContent = 'Strinjanje s pravili je obvezno'; errEl.style.display = 'block'; }
+        document.getElementById('chk1-lbl')?.classList.add('err');
+        valid = false;
+      } else {
+        const errEl = document.getElementById('chk1-err');
+        if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
+        document.getElementById('chk1-lbl')?.classList.remove('err');
+      }
       if (!valid) { shakeBtn(); return; }
 
       // Show loading state
@@ -1296,6 +1337,8 @@
       formData.append('mauticform[lastname]', s);
       formData.append('mauticform[email]', e);
       formData.append('mauticform[score]', G.totalScore);
+      formData.append('mauticform[deljenje_s_sponzorjem][]', 'da');
+      if (document.getElementById('chk2')?.checked) formData.append('mauticform[pravilnik][]', 'da');
       formData.append('mauticform[return]', '');
       formData.append('mauticform[submit]', '1');
 
