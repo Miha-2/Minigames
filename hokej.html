@@ -553,10 +553,12 @@
     // ── Game state ────────────────────────────────────────────────────────────────
     const G = { attemptsLeft: 3, totalScore: 0, shots: [], phase: 'idle' };
     let puck, defenders, goalZones, goalH, rink;
-    let trail = [], sparks = [], floaters = [];
+    let trail = [], sparks = [], floaters = [], goalBurst = [];
     let isDragging = false, dragStartX, dragStartY;
     let mzIdx = 2, mzDir = 1, mzT = 0;
     let tutDone = false, tutA = 0;
+    let slowMo = 1;          // dt multiplier (1 = normal, <1 = slow-mo)
+    let shakeX = 0, shakeY = 0, shakePow = 0; // screen shake
 
     const hint = show => document.getElementById('hint').style.opacity = show ? '1' : '0';
 
@@ -947,12 +949,82 @@
         if (f.life <= 0) return false;
         ctx.globalAlpha = f.life;
         ctx.fillStyle = f.color;
-        ctx.font = `bold ${Math.round((16 + (1 - f.life) * 12) * S)}px Barlow Condensed`;
+        ctx.font = `bold ${Math.round((16 + (1 - f.life) * 12) * S * (f.big || 1))}px Barlow Condensed`;
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         ctx.fillText(f.text, f.x, f.y);
         ctx.globalAlpha = 1;
         return true;
       });
+    }
+
+    // ── Draw: goal burst particles ────────────────────────────────────────────────
+    function drawGoalBurst() {
+      goalBurst = goalBurst.filter(p => {
+        p.x += p.vx * slowMo; p.y += p.vy * slowMo;
+        p.vy += 0.12 * slowMo;
+        p.vx *= 0.97; p.life -= 0.018 * slowMo;
+        if (p.life <= 0) return false;
+        ctx.globalAlpha = Math.min(1, p.life * 2);
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        if (p.shape === 'rect') {
+          ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot += p.spin);
+          ctx.fillRect(-p.sz / 2, -p.sz / 4, p.sz, p.sz / 2);
+          ctx.restore();
+        } else {
+          ctx.arc(p.x, p.y, p.sz * p.life, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+        return true;
+      });
+    }
+
+    // ── Web Audio: goal sound ─────────────────────────────────────────────────────
+    function playGoalSound(pts) {
+      try {
+        const ac = new (window.AudioContext || window.webkitAudioContext)();
+        const vol = ac.createGain(); vol.gain.setValueAtTime(0.6, 0); vol.connect(ac.destination);
+        const thump = ac.createOscillator(); const tg = ac.createGain();
+        thump.connect(tg); tg.connect(vol);
+        thump.frequency.setValueAtTime(80, 0); thump.frequency.exponentialRampToValueAtTime(40, 0.2);
+        tg.gain.setValueAtTime(1, 0); tg.gain.exponentialRampToValueAtTime(0.001, 0.35);
+        thump.start(0); thump.stop(0.35);
+        const baseFreq = pts === 100 ? 880 : pts === 50 ? 660 : 523;
+        [0, 0.08, 0.18].forEach((t, i) => {
+          const o = ac.createOscillator(), g = ac.createGain();
+          o.type = 'sine'; o.connect(g); g.connect(vol);
+          o.frequency.setValueAtTime(baseFreq * [1, 1.26, 1.5][i], t);
+          o.frequency.exponentialRampToValueAtTime(baseFreq * [1, 1.26, 1.5][i] * 1.05, t + 0.3);
+          g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.5, t + 0.04);
+          g.gain.exponentialRampToValueAtTime(0.001, t + 0.55);
+          o.start(t); o.stop(t + 0.55);
+        });
+        setTimeout(() => ac.close(), 1200);
+      } catch(e) {}
+    }
+
+    // ── Spawn goal burst particles ────────────────────────────────────────────────
+    function spawnGoalBurst(x, y, pts) {
+      const cols100 = ['#c8f0d8','#fff','#a0e8c8','#ffe066','#fff'];
+      const cols50  = ['#60C090','#fff','#2EB279','#c8f0d8'];
+      const cols20  = ['#007A3D','#2EB279','#fff','#60C090'];
+      const cols = pts === 100 ? cols100 : pts === 50 ? cols50 : cols20;
+      const count = pts === 100 ? 80 : pts === 50 ? 55 : 38;
+      for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = (2 + Math.random() * (pts === 100 ? 9 : pts === 50 ? 7 : 5)) * S;
+        goalBurst.push({
+          x, y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - (pts === 100 ? 4 : 2) * S,
+          life: 0.7 + Math.random() * 0.5,
+          sz: (3 + Math.random() * (pts === 100 ? 8 : 5)) * S,
+          color: cols[Math.floor(Math.random() * cols.length)],
+          shape: Math.random() > 0.4 ? 'rect' : 'circle',
+          rot: Math.random() * Math.PI * 2,
+          spin: (Math.random() - 0.5) * 0.3,
+        });
+      }
     }
 
     // ── Draw: slingshot ───────────────────────────────────────────────────────────
@@ -1077,11 +1149,18 @@
     // ── Game events ───────────────────────────────────────────────────────────────
     function onGoal(zone) {
       G.phase = 'dead'; tutDone = true; G.totalScore += zone.pts; G.shots.push(zone.pts);
+      // Visual & audio feedback
+      slowMo = 0.18;
+      shakePow = zone.pts === 100 ? 18 : zone.pts === 50 ? 12 : 7;
+      spawnGoalBurst(puck.x, puck.y, zone.pts);
+      playGoalSound(zone.pts);
       document.getElementById('game').classList.add('flash');
-      setTimeout(() => document.getElementById('game').classList.remove('flash'), 600);
-      floaters.push({ x: puck.x, y: puck.y, text: '+' + zone.pts, color: '#fff', life: 1, vy: -1.8 * S });
+      setTimeout(() => document.getElementById('game').classList.remove('flash'), zone.pts === 100 ? 900 : 600);
+      // Bigger floater for center goal
+      const fSize = zone.pts === 100 ? 2.4 : zone.pts === 50 ? 1.8 : 1;
+      floaters.push({ x: puck.x, y: puck.y, text: '+' + zone.pts, color: zone.pts === 100 ? '#ffe066' : '#fff', life: 1, vy: -2.2 * S * fSize, big: fSize });
       G.attemptsLeft--; updateUI(); trail = [];
-      setTimeout(() => G.attemptsLeft > 0 ? showGoalOv(zone) : showEndGame(), 900);
+      setTimeout(() => G.attemptsLeft > 0 ? showGoalOv(zone) : showEndGame(), zone.pts === 100 ? 1200 : 950);
     }
     function onMiss() {
       G.phase = 'dead'; tutDone = true; G.shots.push(0);
@@ -1107,12 +1186,25 @@
 
       ctx.clearRect(0, 0, W, H);
 
+      // Screen shake
+      if (shakePow > 0.01) {
+        shakeX = (Math.random() - 0.5) * shakePow;
+        shakeY = (Math.random() - 0.5) * shakePow;
+        shakePow *= 0.82;
+        ctx.save(); ctx.translate(shakeX, shakeY);
+      }
+
+      // Slow-mo ramp back to normal
+      if (slowMo < 1) { slowMo = Math.min(1, slowMo + 0.04); dt *= slowMo; }
+
       // Static layer: one drawImage instead of hundreds of draw calls
       if (staticLayer) ctx.drawImage(staticLayer, 0, 0, staticLayer.width, staticLayer.height, 0, 0, W, H);
 
       drawGoal(); drawDefenders(); drawTrail();
-      drawSparks(); drawFloaters(); drawSlingshot(); drawPuck();
+      drawGoalBurst(); drawSparks(); drawFloaters(); drawSlingshot(); drawPuck();
       if (!tutDone && G.phase === 'idle') drawTutorial();
+
+      if (shakePow > 0.01) ctx.restore();
 
       update(dt);
       requestAnimationFrame(loop);
@@ -1235,6 +1327,7 @@
     }
     function restartGame() {
       G.attemptsLeft = 3; G.totalScore = 0; G.shots = []; tutDone = false; tutA = 0;
+      slowMo = 1; shakePow = 0; goalBurst = [];
       document.querySelector('.ov')?.remove(); updateUI(); resetPuck();
     }
     function goToHub() { window.location.href = 'https://marketing.hkolimpija.si/anketa-med-tekmo-2'; }
