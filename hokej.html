@@ -537,7 +537,7 @@
     const BN = 0.70;
     const BASE_LM = 0.175;
     const PUCK_R = () => r(14);
-    const DEF_R = () => r(23);
+    const DEF_R = () => r(27);
     const MAX_PUL = () => r(90);
     const getLM = () => BASE_LM / Math.sqrt(S);
 
@@ -822,7 +822,8 @@
       defenders = [
         { x: W * 0.22, y: H * 0.24, vx: 160 * defenderSpeed * S, r: dr, minX: W * 0.08, maxX: W * 0.55 },
         { x: W * 0.78, y: H * 0.38, vx: -140 * defenderSpeed * S, r: dr, minX: W * 0.45, maxX: W * 0.92 },
-        { x: W * 0.50, y: H * 0.52, vx: 100 * defenderSpeed * S, r: dr, minX: W * 0.15, maxX: W * 0.85 },
+        { x: W * 0.50, y: H * 0.52, vx: 100 * defenderSpeed * S, r: dr, minX: W * 0.28, maxX: W * 0.72 },
+        { x: W * 0.65, y: H * 0.64, vx: -120 * defenderSpeed * S, r: dr, minX: W * 0.30, maxX: W * 0.90 },
       ];
 
       trail = []; sparks = []; floaters = [];
@@ -945,11 +946,13 @@
     // ── Draw: floaters (no shadowBlur — expensive on mobile) ─────────────────────
     function drawFloaters() {
       floaters = floaters.filter(f => {
-        f.y += f.vy; f.life -= 0.013;
+        f.y += f.vy * 0.06; f.life -= 0.007;
         if (f.life <= 0) return false;
-        ctx.globalAlpha = f.life;
+        const progress = 1 - f.life;
+        const size = (14 + progress * 22) * S * (f.big || 1);
+        ctx.globalAlpha = f.life > 0.3 ? 1 : f.life / 0.3;
         ctx.fillStyle = f.color;
-        ctx.font = `bold ${Math.round((16 + (1 - f.life) * 12) * S * (f.big || 1))}px Barlow Condensed`;
+        ctx.font = `bold ${Math.round(size)}px Barlow Condensed`;
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         ctx.fillText(f.text, f.x, f.y);
         ctx.globalAlpha = 1;
@@ -979,29 +982,7 @@
       });
     }
 
-    // ── Web Audio: goal sound ─────────────────────────────────────────────────────
-    function playGoalSound(pts) {
-      try {
-        const ac = new (window.AudioContext || window.webkitAudioContext)();
-        const vol = ac.createGain(); vol.gain.setValueAtTime(0.6, 0); vol.connect(ac.destination);
-        const thump = ac.createOscillator(); const tg = ac.createGain();
-        thump.connect(tg); tg.connect(vol);
-        thump.frequency.setValueAtTime(80, 0); thump.frequency.exponentialRampToValueAtTime(40, 0.2);
-        tg.gain.setValueAtTime(1, 0); tg.gain.exponentialRampToValueAtTime(0.001, 0.35);
-        thump.start(0); thump.stop(0.35);
-        const baseFreq = pts === 100 ? 880 : pts === 50 ? 660 : 523;
-        [0, 0.08, 0.18].forEach((t, i) => {
-          const o = ac.createOscillator(), g = ac.createGain();
-          o.type = 'sine'; o.connect(g); g.connect(vol);
-          o.frequency.setValueAtTime(baseFreq * [1, 1.26, 1.5][i], t);
-          o.frequency.exponentialRampToValueAtTime(baseFreq * [1, 1.26, 1.5][i] * 1.05, t + 0.3);
-          g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.5, t + 0.04);
-          g.gain.exponentialRampToValueAtTime(0.001, t + 0.55);
-          o.start(t); o.stop(t + 0.55);
-        });
-        setTimeout(() => ac.close(), 1200);
-      } catch(e) {}
-    }
+    // ── Web Audio: removed ────────────────────────────────────────────────────────
 
     // ── Spawn goal burst particles ────────────────────────────────────────────────
     function spawnGoalBurst(x, y, pts) {
@@ -1150,15 +1131,15 @@
     function onGoal(zone) {
       G.phase = 'dead'; tutDone = true; G.totalScore += zone.pts; G.shots.push(zone.pts);
       // Visual & audio feedback
-      slowMo = 0.18;
+      slowMo = zone.pts === 100 ? 0.06 : zone.pts === 50 ? 0.10 : 0.14;
       shakePow = zone.pts === 100 ? 18 : zone.pts === 50 ? 12 : 7;
       spawnGoalBurst(puck.x, puck.y, zone.pts);
-      playGoalSound(zone.pts);
+
       document.getElementById('game').classList.add('flash');
       setTimeout(() => document.getElementById('game').classList.remove('flash'), zone.pts === 100 ? 900 : 600);
       // Bigger floater for center goal
       const fSize = zone.pts === 100 ? 2.4 : zone.pts === 50 ? 1.8 : 1;
-      floaters.push({ x: puck.x, y: puck.y, text: '+' + zone.pts, color: zone.pts === 100 ? '#ffe066' : '#fff', life: 1, vy: -2.2 * S * fSize, big: fSize });
+      floaters.push({ x: puck.x, y: puck.y, text: '+' + zone.pts, color: '#fff', life: 1, vy: -1.2 * S * fSize, big: fSize });
       G.attemptsLeft--; updateUI(); trail = [];
       setTimeout(() => G.attemptsLeft > 0 ? showGoalOv(zone) : showEndGame(), zone.pts === 100 ? 1200 : 950);
     }
@@ -1194,14 +1175,14 @@
         ctx.save(); ctx.translate(shakeX, shakeY);
       }
 
-      // Slow-mo ramp back to normal
-      if (slowMo < 1) { slowMo = Math.min(1, slowMo + 0.04); dt *= slowMo; }
+      // Slow-mo ramp back to normal (scaled with real dt, not slow dt)
+      if (slowMo < 1) { slowMo = Math.min(1, slowMo + 0.007 * dt); dt *= slowMo; }
 
       // Static layer: one drawImage instead of hundreds of draw calls
       if (staticLayer) ctx.drawImage(staticLayer, 0, 0, staticLayer.width, staticLayer.height, 0, 0, W, H);
 
       drawGoal(); drawDefenders(); drawTrail();
-      drawGoalBurst(); drawSparks(); drawFloaters(); drawSlingshot(); drawPuck();
+      drawGoalBurst(); drawSparks(); drawSlingshot(); drawPuck(); drawFloaters();
       if (!tutDone && G.phase === 'idle') drawTutorial();
 
       if (shakePow > 0.01) ctx.restore();
